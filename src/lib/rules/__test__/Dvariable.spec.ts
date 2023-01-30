@@ -38,8 +38,8 @@ describe("State-container", () => {
         stateContainer = new StateContainer([inputBlockingBySequence]);
         const condition: Condition = {
             kind: "numeric-condition",
-            factId: inputBlockingBySequence.id,
-            factLabel: inputBlockingBySequence.variableLabel,
+            referenceId: inputBlockingBySequence.id,
+            referenceLabel: inputBlockingBySequence.variableLabel,
             valueLabel: "",
             value: 0,
             operator: "eq",
@@ -47,8 +47,8 @@ describe("State-container", () => {
 
         const conditionNot: Condition = {
             kind: "numeric-condition",
-            factId: inputBlockingBySequence.id,
-            factLabel: inputBlockingBySequence.variableLabel,
+            referenceId: inputBlockingBySequence.id,
+            referenceLabel: inputBlockingBySequence.variableLabel,
             valueLabel: "",
             value: 1,
             operator: "eq",
@@ -61,8 +61,8 @@ describe("State-container", () => {
     it("Solve will change after update: ", () => {
         const condition: Condition = {
             kind: "numeric-condition",
-            factId: inputBlockingBySequence.id,
-            factLabel: inputBlockingBySequence.variableLabel,
+            referenceId: inputBlockingBySequence.id,
+            referenceLabel: inputBlockingBySequence.variableLabel,
             valueLabel: "",
             value: 0,
             operator: "eq",
@@ -82,8 +82,8 @@ describe("State-container", () => {
         // stateContainer = new StateContainer([variable]);
         const condition: Condition = {
             kind: "numeric-condition",
-            factId: variable.id,
-            factLabel: variable.variableLabel,
+            referenceId: variable.id,
+            referenceLabel: variable.variableLabel,
             valueLabel: "Audio played at least 1 time.",
             value: 0,
             operator: "greater-then",
@@ -114,19 +114,19 @@ describe("State-container", () => {
     it("Can have a counter variable in state. ", () => {
         const condition: Condition = {
             kind: "numeric-condition",
-            factId: "page-count",
-            factLabel: "Number of pages seen today",
+            referenceId: "page-count",
+            referenceLabel: "Number of pages seen today",
             valueLabel: "Audio played at least 1 time.",
             value: 10,
             operator: "eq",
         };
 
         expect(stateContainer.isMatched(condition)).toBe(false);
-        stateContainer.addToCount(condition.factId, 1);
-        stateContainer.addToCount(condition.factId, 4);
-        stateContainer.addToCount(condition.factId, 5);
+        stateContainer.addToCount(condition.referenceId, 1);
+        stateContainer.addToCount(condition.referenceId, 4);
+        stateContainer.addToCount(condition.referenceId, 5);
         expect(stateContainer.isMatched(condition)).toBe(true);
-        stateContainer.addToCount(condition.factId, 5);
+        stateContainer.addToCount(condition.referenceId, 5);
         expect(stateContainer.isMatched(condition)).toBe(false);
     });
 });

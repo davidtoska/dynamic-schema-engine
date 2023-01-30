@@ -77,8 +77,36 @@ export namespace DVariable {
         readonly value: number;
     }
 
+    interface BooleanProp {
+        readonly kind: "boolean-prop";
+        readonly name: string;
+        readonly defaultValue?: boolean;
+    }
+
+    interface NumericProp {
+        readonly kind: "numeric-prop";
+        readonly name: string;
+        readonly defaultValue?: number;
+    }
+
+    interface CounterProp {
+        readonly kind: "counter-prop";
+        readonly name: string;
+    }
+
+    interface NumericLiteralProp {
+        readonly kind: "numeric-literal-prop";
+        readonly name: string;
+        readonly options: number[];
+    }
+    interface StringLiteralProp {
+        readonly kind: "string-literal-prop";
+        readonly name: string;
+        readonly options: string[];
+    }
+
     export interface CountVariable {
-        readonly kind: "count-variable";
+        readonly kind: "counter-prop";
         readonly id: string;
         readonly variableLabel: string;
         readonly initialValue: number;

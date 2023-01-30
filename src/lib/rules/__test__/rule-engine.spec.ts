@@ -45,8 +45,8 @@ const yIs = (value: number): Fact.Numeric => ({
 
 const xCondition = (operator: Condition.NumericOperator, value: number): Condition.Numeric => ({
     kind: "numeric-condition",
-    factId: "x",
-    factLabel: "",
+    referenceId: "x",
+    referenceLabel: "",
     operator,
     value,
     valueLabel: "",
