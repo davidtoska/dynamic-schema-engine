@@ -122,17 +122,17 @@ export const pages: Array<PageDto> = [
             id: "seq1",
             blocking: true,
             items: [
-                { id: "1", kind: "autoplay-audio", dto: MediaDto.audio1, startAt: 0 },
+                { id: "1", kind: "autoplay-audio", audioId: MediaDto.audio1.id, startAt: 0 },
                 {
                     id: "2",
                     kind: "autoplay-audio",
-                    dto: MediaDto.audio2,
+                    audioId: MediaDto.audio2.id,
                     startAt: 3000,
                 },
                 {
                     id: "1",
                     kind: "autoplay-video",
-                    dto: MediaDto.video1,
+                    videoId: MediaDto.video1.id,
                     muted: false,
                     mode: "blocking",
                 },

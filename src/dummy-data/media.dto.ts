@@ -35,9 +35,11 @@ export namespace MediaDto {
         id: "video2" as ElementId,
         _tag: "video",
         url: videos["2"],
+        isMediaBlocking: true,
         style: { x: 25, y: 55, h: 10, w: 18 },
         clickActions: [],
     } as DVideoDto;
+
     export const video3: DVideoDto = {
         id: "video3" as ElementId,
         _tag: "video",

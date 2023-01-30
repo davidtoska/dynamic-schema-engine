@@ -20,8 +20,8 @@ export class AudioContainer implements CanPlayToEnd {
             this.dto = dto;
         }
 
-        // BIND CALLBACKS
-        // BIND CALLBACKS
+        this.onLoad = this.onLoad.bind(this);
+        this.el.onload = this.onLoad;
         this.onLoadedMetadata = this.onLoadedMetadata.bind(this);
         this.el.onloadedmetadata = this.onLoadedMetadata;
         this.onEnded = this.onEnded.bind(this);
@@ -32,21 +32,46 @@ export class AudioContainer implements CanPlayToEnd {
         this.el.oncanplaythrough = this.onCanPlayThrough;
         this.onEnded = this.onEnded.bind(this);
         this.el.onended = this.onEnded;
+        this.el.ondurationchange = (_: Event) => {
+            const duration = this.el.duration;
+            const isInfinity = duration === Number.POSITIVE_INFINITY;
+            this.eventBus.emit({
+                kind: "AUDIO_DURATION_CHANGE_EVENT",
+                timestamp: DTimestamp.now(),
+                producer: "DAudio",
+                producerId: this.id,
+                data: { duration: this.el.duration, isInfinity },
+            });
+        };
     }
 
     setAudio(dto: DAudioDto) {
-        console.log("DID SET AUDIO");
+        // this.el.onprogress
+        // console.log("DID SET AUDIO");
         this.dto = dto;
         this.el.src = dto.url;
-
         this.el.load();
+        // this.el.ondurationchange
     }
 
     onLoadedMetadata(_: Event) {
-        console.log("TODO emit on bus", _);
+        this.eventBus.emit({
+            kind: "AUDIO_METADATA_LOADED_EVENT",
+            timestamp: DTimestamp.now(),
+            producer: "DAudio",
+            producerId: this.id,
+            data: {},
+        });
     }
 
     onLoad(_: Event) {
+        this.eventBus.emit({
+            kind: "AUDIO_LOAD_EVENT",
+            timestamp: DTimestamp.now(),
+            producer: "DAudio",
+            producerId: this.id,
+            data: {},
+        });
         // console.log(this.TAG + event.type);
     }
 
@@ -65,10 +90,13 @@ export class AudioContainer implements CanPlayToEnd {
     }
 
     private onCanPlayThrough(_: Event) {
-        console.group("CAN PLAY THROUGH");
-        console.log("dur: " + this.el.duration);
-        console.log("played: " + this.el.played);
-        console.groupEnd();
+        this.eventBus.emit({
+            kind: "AUDIO_CAN_PLAY_THROUGH_EVENT",
+            data: {},
+            producer: "DAudio",
+            timestamp: DTimestamp.now(),
+            producerId: this.id,
+        });
     }
 
     private onPlay(_: Event) {
@@ -85,16 +113,16 @@ export class AudioContainer implements CanPlayToEnd {
         const endedOrErrored = new Promise<boolean>((resolve) => {
             this.el.addEventListener(
                 "ended",
-                (e) => {
-                    console.log(e);
+                (_) => {
+                    // console.log(e);
                     resolve(true);
                 },
                 { once: true }
             );
             this.el.addEventListener(
                 "error",
-                (e) => {
-                    console.log(e);
+                (_) => {
+                    // console.log(e);
                     resolve(false);
                 },
                 { once: true }
@@ -105,15 +133,15 @@ export class AudioContainer implements CanPlayToEnd {
             await endedOrErrored;
             return true;
         } catch (e) {
-            if (e instanceof Error) {
-                console.warn(e.message);
-                console.warn(e.name);
-            } else {
-                console.log("Unknown error on play to end");
-            }
+            this.eventBus.emit({
+                kind: "AUDIO_ERROR_EVENT",
+                timestamp: DTimestamp.now(),
+                producer: "DAudio",
+                producerId: this.id,
+                data: { error: e },
+            });
             return false;
         } finally {
-            console.log("Audio played to end!!");
         }
 
         return Promise.resolve(false);

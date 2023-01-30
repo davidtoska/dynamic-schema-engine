@@ -5,17 +5,9 @@ import { AnsweredQuestion } from "../player/history-que";
 import PageId = ID.PageId;
 
 type EventProducer =
-    | "DHtml"
-    | "DVideo"
-    | "User"
-    | "DAudio"
-    | "DImage"
-    | "MediaManager"
-    | "DPage"
-    | "Window"
-    | "HOST"
-    | "RuleEngine"
-    | "Engine";
+    // | "DHtml"
+    "DVideo" | "DUser" | "DAudio" | "DImage" | "MediaManager" | "DPage" | "Window" | "HOST" | "RuleEngine" | "Engine";
+
 interface Ev<K extends EventKind, P extends EventProducer, T> {
     readonly kind: K;
     readonly timestamp: DTimestamp;
@@ -26,24 +18,56 @@ interface Ev<K extends EventKind, P extends EventProducer, T> {
 
 type EventKind = `${Uppercase<string>}_EVENT`;
 
-export type DEvent =
+export type DAudioEvent =
+    | Ev<"AUDIO_PLAY_EVENT", "DAudio", {}>
+    | Ev<"AUDIO_PAUSED_EVENT", "DAudio", {}>
+    | Ev<"AUDIO_ENDED_EVENT", "DAudio", {}>
+    | Ev<"AUDIO_ERROR_EVENT", "DAudio", { error: unknown }>
+    | Ev<"AUDIO_METADATA_LOADED_EVENT", "DAudio", {}>
+    | Ev<"AUDIO_LOAD_EVENT", "DAudio", {}>
+    | Ev<"AUDIO_CAN_PLAY_THROUGH_EVENT", "DAudio", {}>
+    | Ev<"AUDIO_DURATION_CHANGE_EVENT", "DAudio", { duration: number; isInfinity: boolean }>
+    | Ev<"AUDIO_PROGRESS_EVENT", "DAudio", {}>;
+
+export type DVideoEvent =
     | Ev<"VIDEO_PLAY_EVENT", "DVideo", {}>
     | Ev<"VIDEO_PAUSED_EVENT", "DVideo", {}>
     | Ev<"VIDEO_ERROR_EVENT", "DVideo", { error: unknown }>
     | Ev<"VIDEO_EVENT", "DVideo", { error: unknown }>
-    | Ev<"VIDEO_ENDED_EVENT", "DVideo", {}>
-    | Ev<"AUDIO_PLAY_EVENT", "DAudio", {}>
-    | Ev<"AUDIO_PAUSED_EVENT", "DAudio", {}>
-    | Ev<"BLOCKING_MEDIA_START_EVENT", "MediaManager", {}>
-    | Ev<"BLOCKING_MEDIA_END_EVENT", "MediaManager", {}>
-    | Ev<"USER_CLICKED_EVENT", "User", { elementId: ElementId }>
-    | Ev<"AUDIO_ENDED_EVENT", "DAudio", {}>
-    | Ev<"AUDIO_ERROR_EVENT", "DAudio", { error: unknown }>
-    | Ev<"PAGE_ENTER_EVENT", "DPage", {}>
-    | Ev<"PAGE_LEAVE_EVENT", "DPage", {}>
-    | Ev<"PAGE_COMPLETED_EVENT", "DPage", { pageId: PageId; answers: AnsweredQuestion[] }>
+    | Ev<"VIDEO_LOADED_METADATA_EVENT", "DVideo", { duration: number; isInfinity: boolean }>
+    | Ev<"VIDEO_DURATION_CHANGE_EVENT", "DVideo", { duration: number; isInfinity: boolean }>
+    | Ev<"VIDEO_PROGRESS_EVENT", "DVideo", { duration: number; progress: number }>
+    | Ev<"VIDEO_ENDED_EVENT", "DVideo", {}>;
+
+export type MediaManagerEvent =
+    | Ev<"MEDIA_BLOCKING_START_EVENT", "MediaManager", {}>
+    | Ev<"MEDIA_BLOCKING_END_EVENT", "MediaManager", {}>
+    | Ev<"INPUT_BLOCKING_MEDIA_START_EVENT", "MediaManager", {}>
+    | Ev<"INPUT_BLOCKING_MEDIA_END_EVENT", "MediaManager", {}>;
+
+export type DImageEvent =
+    | Ev<
+          "IMAGE_LOADED_EVENT",
+          "DImage",
+          { naturalHeight: number; naturalWidth: number; loadTime: DTimestamp.Diff; height: number; width: number }
+      >
+    | Ev<"IMAGE_ERROR_EVENT", "DImage", { error: unknown }>;
+export type DPageEvents =
+    | Ev<"PAGE_ENTER_EVENT", "DPage", { pageId: PageId }>
+    | Ev<"PAGE_COMPLETED_EVENT", "DPage", { pageId: PageId; answers: AnsweredQuestion[] }>;
+
+export type DWindowEvents =
     | Ev<"WINDOW_VISIBILITY_CHANGE_EVENT", "Window", {}>
-    | Ev<"WINDOW_ONLINE_STATUS_CHANGE_EVENT", "Window", {}>
+    | Ev<"WINDOW_ONLINE_STATUS_CHANGE_EVENT", "Window", {}>;
+
+export type DEvent =
+    | DImageEvent
+    | DAudioEvent
+    | DVideoEvent
+    | DPageEvents
+    | MediaManagerEvent
+    | DWindowEvents
+    | Ev<"USER_CLICKED_EVENT", "DUser", { elementId: ElementId }>
     | Ev<"RULE_MATCH_EVENT", "Window", { ruleId: string }>
     | Ev<
           "ENGINE_SCHEMA_LOADED_EVENT",

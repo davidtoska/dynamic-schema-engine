@@ -34,10 +34,9 @@ export class DPage {
                 timestamp: DTimestamp.now(),
                 producer: "DPage",
                 producerId: this.id,
-                data: {},
+                data: { pageId: this.id },
             });
         }
-        console.log("PAGE LOAD.");
     }
 
     log(): void {

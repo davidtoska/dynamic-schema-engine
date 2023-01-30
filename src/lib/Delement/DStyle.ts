@@ -1,7 +1,7 @@
 import { DCss } from "./css";
 import { ElementKeyNames } from "./DStyle-utils";
 import { DUtil } from "../utils/DUtil";
-import { resolveBaseUrl } from "vite";
+
 type DStyle2 = CSSStyleDeclaration;
 export interface DStyle {
     opacity: number;
@@ -47,6 +47,7 @@ export interface DStyle {
     textColor: string;
     fontWeight: 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
     textAlign: "right" | "left" | "center";
+    letterSpacing: DCss.Px;
 }
 
 export namespace DStyle {
@@ -78,6 +79,7 @@ export namespace DStyle {
             translate,
             margin,
             padding,
+            letterSpacing,
             h,
             transform,
             visibility,
@@ -138,6 +140,16 @@ export namespace DStyle {
             el.style.borderRadius = DCss.toString(borderRadius, scale);
         }
 
+        if (letterSpacing) {
+            el.style.letterSpacing = DCss.toString(letterSpacing, scale);
+        }
+        if (margin) {
+            el.style.margin = DCss.toString(margin, scale);
+        }
+        if (padding) {
+            el.style.padding = DCss.toString(padding, scale);
+        }
+
         if (DUtil.isNumber(opacity)) {
             el.style.opacity = opacity + "";
         }
@@ -148,6 +160,6 @@ export namespace DStyle {
 
         return el;
     };
-    const propNames = new Set(...ElementKeyNames);
-    export const validKey = (keyName: string) => propNames.has(keyName);
+    // const propNames = new Set(...ElementKeyNames);
+    // export const validKey = (keyName: string) => propNames.has(keyName);
 }

@@ -1,11 +1,18 @@
-import { DB, Theme1 } from "./theme1";
+import { Theme1 } from "./theme1";
 import { DStyle } from "../lib/Delement/DStyle";
+import { DB } from "./DB";
+import { ThemeUtils } from "./theme-utils";
+import { ID } from "../lib/ID";
 
 describe("Theme1 works", () => {
     test("DB works", () => {
         const db = DB.createDB();
 
-        const q1 = db.createQuestion("hva tenker du", [1, 0, 9]);
+        const q1 = db.createQuestion("hva tenker du", [
+            { value: 1, theme: "normal" },
+            { value: 0, theme: "normal" },
+            { value: 0, theme: "normal" },
+        ]);
         expect(db.getQuestion(q1.id)).toBe(q1);
         const options = q1.options.map((id) => db.getOption(id));
         q1.options.forEach((id) => {
@@ -17,9 +24,14 @@ describe("Theme1 works", () => {
 
     test("Will create response-buttons", () => {
         const db = DB.createDB();
+        const pageId = ID.pageId();
 
-        const q = db.createQuestion("hei", [1, 0, 9]);
-        const responseButtons = Theme1.responseButtons(q, db);
+        const q = db.createQuestion("hei", [
+            { value: 1, theme: "normal" },
+            { value: 0, theme: "normal" },
+            { value: 0, theme: "normal" },
+        ]);
+        const responseButtons = Theme1.responseButtons(q, pageId, db);
         expect(responseButtons.length).toBe(3);
         expect(responseButtons.length).toBe(3);
         responseButtons.forEach((el) => {
@@ -30,7 +42,7 @@ describe("Theme1 works", () => {
 
     test("Can space evenly when all is even", () => {
         const btn1 = {};
-        const els = Theme1.spaceEvenlyX<{ style: Partial<DStyle> }>([
+        const els = ThemeUtils.spaceEvenlyX<{ style: Partial<DStyle> }>([
             { style: { w: 20 } },
             { style: { w: 20 } },
             { style: { w: 20 } },
@@ -50,7 +62,7 @@ describe("Theme1 works", () => {
 
     test("Can space evenly even if uneven lengths", () => {
         const btn1 = {};
-        const els = Theme1.spaceEvenlyX([
+        const els = ThemeUtils.spaceEvenlyX([
             { style: { w: 10, x: 0 } },
             { style: { w: 30, x: 10 } },
             { style: { w: 20, x: 30 } },
@@ -65,7 +77,7 @@ describe("Theme1 works", () => {
     });
 
     test("Can space evenly on a shorter scale 10-90", () => {
-        const els = Theme1.spaceEvenlyX([{ style: {} }, { style: {} }, { style: {} }], {
+        const els = ThemeUtils.spaceEvenlyX([{ style: {} }, { style: {} }, { style: {} }], {
             startAt: 10,
             endAt: 90,
             defaultItemWidth: 20,

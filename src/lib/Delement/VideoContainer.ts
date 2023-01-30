@@ -3,6 +3,7 @@ import { DTimestamp } from "../common/DTimestamp";
 import { EventBus } from "../events-and-actions/event-bus";
 import { ScaleService } from "../engine/scale";
 import { DStyle } from "./DStyle";
+import { DUtil } from "../utils/DUtil";
 
 export interface CanPlayToEnd {
     playToEnd(): Promise<boolean>;
@@ -54,25 +55,45 @@ export class VideoContainer implements CanPlayToEnd {
         private readonly scale: ScaleService,
         dto?: DVideoDto
     ) {
-        // super(document.createElement("video"), eventBus, pageActionService, dto, scale);
         this.TAG = "[ D_Video ] : ";
         this.el.controls = false;
         DStyle.normalize(this.el);
         DStyle.applyStyles(this.el, this.defaultStyles, this.scale.scale);
-        this._onLoadedMetadata = this._onLoadedMetadata.bind(this);
         this._onReadyToPlay = this._onReadyToPlay.bind(this);
         this._onPlayHandler = this._onPlayHandler.bind(this);
         this._onPauseHandler = this._onPauseHandler.bind(this);
         this._onEndedHandler = this._onEndedHandler.bind(this);
 
         this.el.onended = this._onEndedHandler;
-        this.el.onloadedmetadata = this._onLoadedMetadata;
         this.el.onplay = this._onPlayHandler;
         this.el.onpause = this._onPauseHandler;
         this.el.oncanplay = this._onReadyToPlay;
         if (dto) {
             this.setDto(dto);
         }
+        this.el.onloadedmetadata = () => {
+            const duration = this.el.duration;
+            const isInfinity = DUtil.isInfinity(duration);
+            this.eventBus.emit({
+                kind: "VIDEO_LOADED_METADATA_EVENT",
+                timestamp: DTimestamp.now(),
+                producer: "DVideo",
+                producerId: this.id,
+                data: { duration, isInfinity },
+            });
+        };
+        // TODO USE THIS SYNTAX?
+        this.el.ondurationchange = () => {
+            const duration = this.el.duration;
+            const isInfinity = DUtil.isInfinity(duration);
+            this.eventBus.emit({
+                kind: "VIDEO_DURATION_CHANGE_EVENT",
+                producer: "DVideo",
+                producerId: this.id,
+                timestamp: DTimestamp.now(),
+                data: { duration, isInfinity },
+            });
+        };
     }
 
     getStats() {
@@ -97,16 +118,16 @@ export class VideoContainer implements CanPlayToEnd {
         };
     }
 
-    private _onLoadedMetadata(_: Event) {
-        // console.log(md);
-    }
-
     setDto(dto: DVideoDto) {
         this.dto = dto;
         this.el.volume = 1;
         this.setStyle(dto.style);
         this.el.src = dto.url;
         this.el.load();
+    }
+
+    getCurrentDto(): DVideoDto | false {
+        return this.dto ?? false;
     }
 
     setStyle(styles: Partial<DStyle>) {

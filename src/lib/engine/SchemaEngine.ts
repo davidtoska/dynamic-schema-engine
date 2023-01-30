@@ -6,7 +6,8 @@ import { DPlayer } from "../player/dplayer";
 import { AnsweredQuestion } from "../player/history-que";
 import { DTimestamp } from "../common/DTimestamp";
 import { DPage } from "./DPage";
-import { Scale, ScaleService } from "./scale";
+import { ScaleService } from "./scale";
+import { ResourceProvider } from "../services/resource-provider";
 
 export class SchemaEngine {
     private readonly commandBus = new DCommandBus();
@@ -16,6 +17,7 @@ export class SchemaEngine {
     private readonly hostElement: HTMLDivElement;
     private readonly uiContainer: HTMLDivElement = document.createElement("div");
     private readonly mediaContainer: HTMLDivElement = document.createElement("div");
+    private readonly resourceProvider: ResourceProvider;
     private player: DPlayer;
     private readonly subs: Array<() => void> = [];
 
@@ -35,7 +37,15 @@ export class SchemaEngine {
             containerWidth: width,
             containerHeight: height,
         });
-        this.mediaManager = new DMediaManager(this.mediaContainer, this.commandBus, this.eventBus, this.scale);
+        const resources = SchemaDto.getResources(this.schema);
+        this.resourceProvider = new ResourceProvider({ videos: resources.videoList, audio: resources.audioList });
+        this.mediaManager = new DMediaManager(
+            this.mediaContainer,
+            this.commandBus,
+            this.eventBus,
+            this.resourceProvider,
+            this.scale
+        );
         this.player = new DPlayer(this.schema);
         this.styleSelf();
         this.nextPage();
@@ -59,6 +69,9 @@ export class SchemaEngine {
 
     private hookUpListeners() {
         const commandSubscription = this.commandBus.subscribe((command) => {
+            // switch (command.kind) {
+            //
+            // }
             if (command.kind === "PAGE_QUE_NEXT_PAGE_COMMAND") {
                 this.nextPage();
             }
@@ -87,9 +100,9 @@ export class SchemaEngine {
     private styleSelf() {
         this.hostElement.style.height = this.scale.pageHeight + "px";
         this.hostElement.style.width = this.scale.pageWidth + "px";
-        this.hostElement.style.backgroundColor = "gray";
+        this.hostElement.style.backgroundColor = this.schema.backgroundColor ?? "white";
         this.hostElement.style.position = "relative";
-        this.hostElement.style.overflow = "hidden";
+        // this.hostElement.style.overflow = "hidden";
         const makeStatic = (div: HTMLDivElement) => {
             div.style.height = "0px";
             div.style.width = "0px";

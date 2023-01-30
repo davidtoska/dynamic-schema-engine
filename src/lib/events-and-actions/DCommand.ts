@@ -21,12 +21,14 @@ export type EngineCommand = CommandDto<
         readonly factsCollected: ReadonlyArray<Fact>;
     }
 >;
-export interface CommandDto<K extends CommandKind, T extends CommandTarget, P> {
+
+interface CommandDto<K extends CommandKind, T extends CommandTarget, P> {
     readonly kind: K;
     readonly target: T;
     readonly targetId: T | ElementId;
     readonly payload: P;
 }
+
 export type VideoCommand =
     | CommandDto<"VIDEO_PLAY_COMMAND", "VIDEO", { volume?: number }>
     | CommandDto<"VIDEO_SET_VOLUME_COMMAND", "VIDEO", { volume: number }>
@@ -35,17 +37,24 @@ export type VideoCommand =
 
 export type AudioCommand =
     | CommandDto<"AUDIO_PAUSE_COMMAND", "AUDIO", {}>
-    | CommandDto<"AUDIO_PLAY_COMMAND", "AUDIO", { volume?: number }>
-    | CommandDto<"AUDIO_SET_VOLUME_COMMAND", "AUDIO", { volume: number }>
-    | CommandDto<"AUDIO_JUMP_TO_COMMAND", "AUDIO", { volume?: number; ms: number }>;
+    | CommandDto<"AUDIO_PLAY_COMMAND", "AUDIO", { volume?: number; startAt?: number }>
+    | CommandDto<"AUDIO_SET_VOLUME_COMMAND", "AUDIO", { volume: number }>;
 
-export type StyleCommand =
+export type ElementCommand =
     | CommandDto<"ELEMENT_ANIMATE_COMMAND", "ELEMENT", AnimationDto>
-    | CommandDto<"ELEMENT_STYLE_COMMAND", "ELEMENT", { changes: Partial<DStyle> }>;
+    | CommandDto<"ELEMENT_DISABLE_CLICK_COMMAND", "ELEMENT", {}>
+    | CommandDto<"ELEMENT_ENABLE_CLICK_COMMAND", "ELEMENT", {}>
+    | CommandDto<"ELEMENT_STYLE_COMMAND", "ELEMENT", { changes: Partial<DStyle>; clickIsAllowed?: boolean }>;
 
-export type RuleCommand =
+export type PageQueCommand =
     | CommandDto<"PAGE_QUE_EXCLUDE_BY_TAG_COMMAND", "PAGE_QUE", { tagIds: string[] }>
     | CommandDto<"PAGE_QUE_EXCLUDE_BY_PAGE_ID_COMMAND", "PAGE_QUE", { pageIds: Array<PageId> }>
     | CommandDto<"PAGE_QUE_JUMP_TO_PAGE_COMMAND", "PAGE_QUE", { readonly pageId: PageId }>;
 
-export type DCommand = NavigationCommand | VideoCommand | AudioCommand | StyleCommand | EngineCommand | RuleCommand;
+export type DCommand =
+    | NavigationCommand
+    | VideoCommand
+    | AudioCommand
+    | ElementCommand
+    | EngineCommand
+    | PageQueCommand;

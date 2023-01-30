@@ -13,6 +13,7 @@ import { ScaleService } from "../engine/scale";
 
 export abstract class DElement<T extends HTMLElement> {
     protected readonly el: T;
+    private clickHandlerIsEnabled = true;
     readonly id: ElementId;
     private isAnimatingSelf = false;
     protected currStyle: Partial<DStyle> = {
@@ -59,9 +60,9 @@ export abstract class DElement<T extends HTMLElement> {
         }
         // TODO MENORY LEAK
         this.eventBus.subscribe((event) => {
-            const maybeActions = this.eventHandlers.get(event.kind);
-            maybeActions?.forEach((action) => {
-                this.doAction(action);
+            const commandsToExecute = this.eventHandlers.get(event.kind);
+            commandsToExecute?.forEach((command) => {
+                this.doAction(command);
             });
             if (event.kind === "HOST_SCALE_CHANGED_EVENT") {
                 console.log("HANDLE THIS SCALE CHANGE!!");
@@ -82,6 +83,14 @@ export abstract class DElement<T extends HTMLElement> {
                 // TODO CHECK FOR TARGET ID
                 this.handleAnimateSelfAction(command.payload);
                 break;
+            case "ELEMENT_ENABLE_CLICK_COMMAND":
+                this.clickHandlerIsEnabled = true;
+                // this.updateStyles(command.payload.changes);
+                break;
+            case "ELEMENT_DISABLE_CLICK_COMMAND":
+                this.clickHandlerIsEnabled = false;
+                // this.handleAnimateSelfAction(command.payload);
+                break;
             case "VIDEO_PLAY_COMMAND":
                 this.commandBud.emit(command);
                 break;
@@ -95,6 +104,7 @@ export abstract class DElement<T extends HTMLElement> {
                 this.commandBud.emit(command);
                 break;
             case "VIDEO_SET_VOLUME_COMMAND":
+                this.commandBud.emit(command);
                 break;
             case "AUDIO_PLAY_COMMAND":
                 this.commandBud.emit(command);
@@ -103,8 +113,6 @@ export abstract class DElement<T extends HTMLElement> {
                 this.commandBud.emit(command);
                 break;
             case "AUDIO_SET_VOLUME_COMMAND":
-                break;
-            case "AUDIO_JUMP_TO_COMMAND":
                 this.commandBud.emit(command);
                 break;
             case "PAGE_QUE_NEXT_PAGE_COMMAND":
@@ -128,17 +136,22 @@ export abstract class DElement<T extends HTMLElement> {
     }
 
     private onClickHandler(_: MouseEvent) {
+        if (!this.clickHandlerIsEnabled) {
+            console.log(this.id + "Click disabled");
+            return;
+        }
         const clickAction = this.baseDto.onClick;
         if (clickAction && clickAction.length > 0) {
             this.eventBus.emit({
                 kind: "USER_CLICKED_EVENT",
-                producer: "User",
+                producer: "DUser",
                 producerId: this.id,
                 data: { elementId: this.id },
                 timestamp: DTimestamp.now(),
             });
-            clickAction.forEach((action) => {
-                this.doAction(action);
+            clickAction.forEach((command) => {
+                this.commandBud.emit(command);
+                // this.doAction(action);
             });
         }
     }

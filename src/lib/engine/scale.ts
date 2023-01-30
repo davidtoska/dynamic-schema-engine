@@ -31,7 +31,6 @@ export class ScaleService {
         this.containerWidth = bounds.width;
         this.containerHeight = bounds.height;
         this.updateScale();
-        console.log(this._scale);
     }
     private updateScale() {
         const scaleFn = Scale.calc(this.baseHeight, this.baseWidth);

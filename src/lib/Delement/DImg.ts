@@ -3,12 +3,14 @@ import { DImgDto } from "../DElement.dto";
 import { DCommandBus } from "../events-and-actions/DCommandBus";
 import { EventBus } from "../events-and-actions/event-bus";
 import { ScaleService } from "../engine/scale";
+import { DTimestamp } from "../common/DTimestamp";
 
 export class DImg extends DElement<HTMLImageElement> {
     private static IMAGE_COUNT = 0;
     private readonly imageCount: number;
     readonly TAG: string;
     readonly TIMING_TAG: string;
+    private readonly loadStart: DTimestamp;
 
     constructor(
         private readonly dto: DImgDto,
@@ -24,7 +26,7 @@ export class DImg extends DElement<HTMLImageElement> {
         this.el.loading = "eager";
         this.el.style.position = "absolute";
         this.setStyle(dto.style);
-
+        this.loadStart = DTimestamp.now();
         // Bind Handlers
         this.onError = this.onError.bind(this);
         this.onLoad = this.onLoad.bind(this);
@@ -43,13 +45,6 @@ export class DImg extends DElement<HTMLImageElement> {
         this.setStyle(this.currStyle);
     }
 
-    // private onClick(ev: Event) {
-    //   console.log(ev.type);
-    //   // this.dto.clickAction.forEach((action) => {
-    //   //   this.actionSubject.emit(action);
-    //   // });
-    // }
-
     private onError(ev: Event | string) {
         if (ev instanceof Event) {
             console.log(this.TAG + " " + ev.type);
@@ -58,16 +53,21 @@ export class DImg extends DElement<HTMLImageElement> {
         }
     }
 
-    private onLoad(ev: Event) {
-        console.groupCollapsed(this.TAG + "LOADED");
-        console.log("H: " + this.el.height);
-        console.log("W: " + this.el.width);
-        console.log("W: " + this.el.loading);
-        console.log(ev);
+    private onLoad(_: Event) {
+        const loadTime = DTimestamp.diffNow(this.loadStart);
 
-        console.log("Natural H: " + this.el.naturalHeight);
-        console.log("Natural W: " + this.el.naturalWidth);
-        console.timeEnd(this.TIMING_TAG);
-        console.groupEnd();
+        this.eventBus.emit({
+            kind: "IMAGE_LOADED_EVENT",
+            producer: "DImage",
+            producerId: this.id,
+            timestamp: DTimestamp.now(),
+            data: {
+                loadTime,
+                naturalHeight: this.el.naturalHeight,
+                naturalWidth: this.el.naturalWidth,
+                height: this.el.height,
+                width: this.el.width,
+            },
+        });
     }
 }
