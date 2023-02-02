@@ -1,8 +1,8 @@
 import { DElement } from "../Delement/DElement";
 import { PageDto } from "../SchemaDto";
 import { createDElement } from "./element-factory";
-import { EventBus } from "../events-and-actions/event-bus";
-import { DCommandBus } from "../events-and-actions/DCommandBus";
+import { EventBus } from "../events/event-bus";
+import { DCommandBus } from "../commands/DCommandBus";
 import { DTimestamp } from "../common/DTimestamp";
 import { ScaleService } from "./scale";
 

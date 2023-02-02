@@ -1,7 +1,7 @@
 import { DStyle } from "./Delement/DStyle";
-import { DEventHandler } from "./events-and-actions/DEventHandler";
+import { DEventHandler } from "./event-handlers/DEventHandler";
 import { ID } from "./ID";
-import { DCommand } from "./events-and-actions/DCommand";
+import { DCommand } from "./commands/DCommand";
 
 export type DElementDto = DTextDto | DImgDto | DDivDto;
 export interface DElementBaseDto {
@@ -9,6 +9,11 @@ export interface DElementBaseDto {
     readonly style: Partial<DStyle>;
     readonly eventHandlers?: ReadonlyArray<DEventHandler>;
     readonly onClick?: ReadonlyArray<DCommand>;
+    readonly stateQueryChange?: {
+        queryName: string;
+        whenTrue: ReadonlyArray<DCommand>;
+        whenFalse: ReadonlyArray<DCommand>;
+    };
 }
 
 export interface DTextDto extends DElementBaseDto {
@@ -30,7 +35,7 @@ export interface DVideoDto extends DElementBaseDto {
     readonly _tag: "video";
     readonly url: string;
     // readonly mode: "gif" | "autoplay" | "on-demand";
-    // readonly isMediaBlocking: boolean;
+    readonly isMediaBlocking: boolean;
     // readonly isInputBlocking: boolean;
 }
 
@@ -38,7 +43,5 @@ export interface DAudioDto {
     readonly id: string;
     readonly _tag: "audio";
     readonly url: string;
-    // readonly isMediaBlocking: boolean;
-    // readonly isInputBlocking: boolean;
-    // readonly delay: number;
+    readonly isMediaBlocking: boolean;
 }

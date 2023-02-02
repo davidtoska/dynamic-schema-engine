@@ -1,4 +1,4 @@
-class Ok<T> implements IResult<T> {
+export class Ok<T> implements IResult<T> {
     constructor(readonly value: T) {}
     isOk(): this is Ok<T> {
         return true;
@@ -13,7 +13,7 @@ class Ok<T> implements IResult<T> {
     }
 }
 
-class Failure<T> implements IResult<T> {
+export class Failure<T> implements IResult<T> {
     constructor(readonly message: string) {}
     isFailure(): this is Failure<T> {
         return true;

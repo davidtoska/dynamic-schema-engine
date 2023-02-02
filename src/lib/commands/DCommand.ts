@@ -4,10 +4,12 @@ import { AnimationDto } from "../AnimationDto";
 import PageId = ID.PageId;
 import ElementId = ID.ElementId;
 import { Fact } from "../rules/fact";
+import { DState } from "../state/Dstate";
 
-type CommandTarget = "VIDEO" | "AUDIO" | "ELEMENT" | "PAGE_QUE" | "ENGINE";
+type CommandTarget = "VIDEO" | "AUDIO" | "ELEMENT" | "PAGE_QUE" | "ENGINE" | "STATE";
 type CommandKind = `${Uppercase<CommandTarget>}_${Uppercase<string>}_COMMAND`;
 
+type StateCommand = CommandDto<"STATE_MUTATE_COMMAND", "STATE", { mutation: DState.StateMutation }>;
 export type NavigationCommand =
     | CommandDto<"PAGE_QUE_NEXT_PAGE_COMMAND", "PAGE_QUE", {}>
     | CommandDto<"PAGE_QUE_GO_TO_SEQUENCE_COMMAND", "PAGE_QUE", { sequenceId: string }>
@@ -52,6 +54,7 @@ export type PageQueCommand =
     | CommandDto<"PAGE_QUE_JUMP_TO_PAGE_COMMAND", "PAGE_QUE", { readonly pageId: PageId }>;
 
 export type DCommand =
+    | StateCommand
     | NavigationCommand
     | VideoCommand
     | AudioCommand

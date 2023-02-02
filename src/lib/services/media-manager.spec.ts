@@ -1,9 +1,8 @@
 import { DMediaManager } from "./DMedia-manager";
-import { EventBus } from "../events-and-actions/event-bus";
+import { EventBus } from "../events/event-bus";
 import { ScaleService } from "../engine/scale";
-import { DCommandBus } from "../events-and-actions/DCommandBus";
+import { DCommandBus } from "../commands/DCommandBus";
 import { ResourceProvider } from "./resource-provider";
-import { MediaDto } from "../../dummy-data/media.dto";
 
 describe("Media-manager to work", () => {
     test("Can be instanciated", () => {
@@ -18,8 +17,8 @@ describe("Media-manager to work", () => {
         });
 
         const resourceProvider = new ResourceProvider({
-            videos: [MediaDto.video1, MediaDto.video2, MediaDto.video3],
-            audio: [MediaDto.audio1, MediaDto.audio4],
+            videos: [],
+            audio: [],
         });
         const mm = new DMediaManager(host, commandBus, eventBus, resourceProvider, scale);
         // const pageDto: PageDto = {id}

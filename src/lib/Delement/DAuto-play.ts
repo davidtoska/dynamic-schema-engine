@@ -1,5 +1,3 @@
-import { DAudioDto, DVideoDto } from "../DElement.dto";
-
 export interface AutoPlayVideo {
     readonly id: string;
     readonly kind: "autoplay-video";

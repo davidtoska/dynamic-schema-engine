@@ -1,7 +1,6 @@
 import { img } from "./media-urls";
 import { DElementDto } from "../lib/DElement.dto";
 import { PageDto } from "../lib/SchemaDto";
-import { MediaDto } from "./media.dto";
 import { ID } from "../lib/ID";
 import ElementId = ID.ElementId;
 import PageId = ID.PageId;
@@ -121,22 +120,7 @@ export const pages: Array<PageDto> = [
         autoPlaySequence: {
             id: "seq1",
             blocking: true,
-            items: [
-                { id: "1", kind: "autoplay-audio", audioId: MediaDto.audio1.id, startAt: 0 },
-                {
-                    id: "2",
-                    kind: "autoplay-audio",
-                    audioId: MediaDto.audio2.id,
-                    startAt: 3000,
-                },
-                {
-                    id: "1",
-                    kind: "autoplay-video",
-                    videoId: MediaDto.video1.id,
-                    muted: false,
-                    mode: "blocking",
-                },
-            ],
+            items: [],
         },
     },
     {

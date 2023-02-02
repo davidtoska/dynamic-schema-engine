@@ -2,8 +2,8 @@ import { DElement } from "./DElement";
 import { DDivDto } from "../DElement.dto";
 import { DText } from "./DText";
 import { DImg } from "./DImg";
-import { DCommandBus } from "../events-and-actions/DCommandBus";
-import { EventBus } from "../events-and-actions/event-bus";
+import { DCommandBus } from "../commands/DCommandBus";
+import { EventBus } from "../events/event-bus";
 import { ScaleService } from "../engine/scale";
 
 export class DDiv extends DElement<HTMLDivElement> {

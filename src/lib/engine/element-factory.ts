@@ -1,12 +1,10 @@
 import { DElement } from "../Delement/DElement";
-import { AudioContainer } from "../Delement/AudioContainer";
 import { DDiv } from "../Delement/Ddiv";
 import { DImg } from "../Delement/DImg";
-import { VideoContainer } from "../Delement/VideoContainer";
 import { DText } from "../Delement/DText";
 import { DDivDto, DElementDto } from "../DElement.dto";
-import { DCommandBus } from "../events-and-actions/DCommandBus";
-import { EventBus } from "../events-and-actions/event-bus";
+import { DCommandBus } from "../commands/DCommandBus";
+import { EventBus } from "../events/event-bus";
 import { ScaleService } from "./scale";
 
 export const createDElement = (
@@ -16,10 +14,6 @@ export const createDElement = (
     scale: ScaleService
 ): DElement<any> => {
     switch (dto._tag) {
-        // case "audio":
-        //     const newAudio = new DAudio(actionBus, eventBus, scale, dto);
-        //     newAudio.setAudio(dto);
-        //     return newAudio;
         case "div":
             const childEls = createChildrenForDiv(dto, actionBus, eventBus, scale);
             const newDiv = new DDiv(dto, eventBus, actionBus, scale, childEls);
@@ -30,8 +24,8 @@ export const createDElement = (
             return new DText(dto, eventBus, actionBus, scale);
         default:
             const check: never = dto;
-            console.log(dto);
             throw new Error("Unknown dto given to the createDElement function.");
+        // TODO LOGGING or create any HTML-ELEMENT??
     }
 };
 

@@ -4,6 +4,7 @@ import { DElementDto, DImgDto, DVideoDto } from "../lib/DElement.dto";
 import { ThemeUtils } from "./theme-utils";
 import { IconUrls } from "../lib/icon-urls";
 import { DStyle } from "../lib/Delement/DStyle";
+import { DEFAULT_STATE_PROPS } from "../lib/state/default-props";
 
 export namespace ThemeVideoPlayer {
     import ImageDB = DB.ImageDB;
@@ -57,6 +58,7 @@ export namespace ThemeVideoPlayer {
             style: theme.videoElementStyles,
             _tag: "video",
             eventHandlers: [],
+            isMediaBlocking: true,
             onClick: [],
             url: video.src,
         };
@@ -67,7 +69,21 @@ export namespace ThemeVideoPlayer {
             _tag: "img",
             url: playIconDB.src,
             style: { ...theme.playIcon.css, ...theme.playIcon.cssEnabled },
-            onClick: [{ kind: "VIDEO_PLAY_COMMAND", target: "VIDEO", targetId: videoId, payload: {} }],
+            onClick: [
+                { kind: "VIDEO_PLAY_COMMAND", target: "VIDEO", targetId: videoId, payload: {} },
+                {
+                    kind: "STATE_MUTATE_COMMAND",
+                    target: "STATE",
+                    targetId: "STATE",
+                    payload: {
+                        mutation: {
+                            kind: "set-number",
+                            propName: DEFAULT_STATE_PROPS.mediaBlockedByVideo.propDefinition.propName,
+                            value: 1,
+                        },
+                    },
+                },
+            ],
             eventHandlers: [
                 ...ThemeUtils.hideOnVideoPlay(playButtonId),
                 {

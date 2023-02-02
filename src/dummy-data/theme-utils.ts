@@ -1,8 +1,8 @@
 import { DElementDto } from "../lib/DElement.dto";
 import { DStyle } from "../lib/Delement/DStyle";
 import { ID } from "../lib/ID";
-import { DCommand } from "../lib/events-and-actions/DCommand";
-import { DEventHandler } from "../lib/events-and-actions/DEventHandler";
+import { DCommand } from "../lib/commands/DCommand";
+import { DEventHandler } from "../lib/event-handlers/DEventHandler";
 
 export namespace ThemeUtils {
     import ElementId = ID.ElementId;

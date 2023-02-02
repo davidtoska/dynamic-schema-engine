@@ -1,10 +1,10 @@
 import { DStyle } from "./DStyle";
 import { DElementBaseDto } from "../DElement.dto";
-import { DCommand } from "../events-and-actions/DCommand";
-import { DCommandBus } from "../events-and-actions/DCommandBus";
-import { DEventHandler } from "../events-and-actions/DEventHandler";
+import { DCommand } from "../commands/DCommand";
+import { DCommandBus } from "../commands/DCommandBus";
+import { DEventHandler } from "../event-handlers/DEventHandler";
 import { DUtil } from "../utils/DUtil";
-import { EventBus } from "../events-and-actions/event-bus";
+import { EventBus } from "../events/event-bus";
 import { ID } from "../ID";
 import ElementId = ID.ElementId;
 import { DTimestamp } from "../common/DTimestamp";
@@ -58,10 +58,13 @@ export abstract class DElement<T extends HTMLElement> {
         if (dto) {
             this.updateStyles(dto?.style);
         }
-        // TODO MENORY LEAK
+        // TODO MEMORY LEAK
         this.eventBus.subscribe((event) => {
-            const commandsToExecute = this.eventHandlers.get(event.kind);
-            commandsToExecute?.forEach((command) => {
+            const handlers = this.eventHandlers.get(event.kind) ?? [];
+
+            // TODO Apply Conditions in WHEN.
+            const commands = handlers.map((h) => h.thenExecute).flat(1);
+            commands.forEach((command) => {
                 this.doAction(command);
             });
             if (event.kind === "HOST_SCALE_CHANGED_EVENT") {
@@ -125,10 +128,16 @@ export abstract class DElement<T extends HTMLElement> {
                 this.commandBud.emit(command);
                 break;
             case "PAGE_QUE_EXCLUDE_BY_PAGE_ID_COMMAND":
+                this.commandBud.emit(command);
                 break;
             case "PAGE_QUE_JUMP_TO_PAGE_COMMAND":
+                this.commandBud.emit(command);
                 break;
             case "PAGE_QUE_EXCLUDE_BY_TAG_COMMAND":
+                this.commandBud.emit(command);
+                break;
+            case "STATE_MUTATE_COMMAND":
+                this.commandBud.emit(command);
                 break;
             default:
                 DUtil.neverCheck(command);

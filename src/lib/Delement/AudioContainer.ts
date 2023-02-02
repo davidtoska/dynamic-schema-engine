@@ -1,6 +1,6 @@
 import { CanPlayToEnd } from "./VideoContainer";
 import { DAudioDto } from "../DElement.dto";
-import { EventBus } from "../events-and-actions/event-bus";
+import { EventBus } from "../events/event-bus";
 import { DTimestamp } from "../common/DTimestamp";
 
 export class AudioContainer implements CanPlayToEnd {

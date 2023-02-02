@@ -2,13 +2,13 @@ import { AnsweredQuestion, HistoryQue, PageHistory } from "./history-que";
 import { RuleEngine } from "../rules/rule-engine";
 import { NextQue } from "./next-que";
 import { PageDto, SchemaDto } from "../SchemaDto";
-import { NavigationCommand } from "../events-and-actions/DCommand";
+import { NavigationCommand, PageQueCommand } from "../commands/DCommand";
 import { DUtil } from "../utils/DUtil";
 
 export type DPlayerData = Pick<SchemaDto, "pages" | "pageSequences" | "rules">;
 export class DPlayer {
     private history = new HistoryQue();
-    private ruleEngine = new RuleEngine();
+    private ruleEngine = new RuleEngine<PageQueCommand, PageQueCommand>();
     private nextQue = new NextQue();
     private data: DPlayerData;
 

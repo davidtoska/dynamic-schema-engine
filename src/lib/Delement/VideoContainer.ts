@@ -1,6 +1,6 @@
 import { DVideoDto } from "../DElement.dto";
 import { DTimestamp } from "../common/DTimestamp";
-import { EventBus } from "../events-and-actions/event-bus";
+import { EventBus } from "../events/event-bus";
 import { ScaleService } from "../engine/scale";
 import { DStyle } from "./DStyle";
 import { DUtil } from "../utils/DUtil";

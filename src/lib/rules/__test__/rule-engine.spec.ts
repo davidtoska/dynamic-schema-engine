@@ -2,7 +2,7 @@ import { RuleEngine } from "../rule-engine";
 import { Rule } from "../rule";
 import { Fact } from "../fact";
 import { Condition } from "../condition";
-import { PageQueCommand } from "../../events-and-actions/DCommand";
+import { PageQueCommand } from "../../commands/DCommand";
 import { ID } from "../../ID";
 import PageId = ID.PageId;
 
@@ -94,12 +94,13 @@ describe("Rule-engine spec", () => {
     });
 
     it("Empty rule => one error, no actions", () => {
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
             description: "",
             some: [],
             all: [],
-            actions: [],
+            onFailure: [],
+            onSuccess: [],
         };
         const result = engine.solveAll([rule], []);
         expect(result.matching.length).toBe(0);
@@ -108,12 +109,13 @@ describe("Rule-engine spec", () => {
 
     it("Empty facts => no actions, no errors.", () => {
         const hideAs1 = excludeById(["as1" as PageId]);
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
             description: "",
             some: [],
             all: [...trueIf_0_conditions],
-            actions: [hideAs1],
+            onFailure: [],
+            onSuccess: [hideAs1],
         };
         const facts = [yIs(1)];
         const rules = [rule];
@@ -126,12 +128,13 @@ describe("Rule-engine spec", () => {
     });
 
     it("and-rule 0=0 true -> 2 Actions in ruleMatch", () => {
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
             description: "",
             some: [],
             all: [...trueIf_0_conditions],
-            actions: [excludeById(["as3" as PageId, "as6" as PageId])],
+            onFailure: [],
+            onSuccess: [excludeById(["as3" as PageId, "as6" as PageId])],
         };
         const f1 = xIs(0);
         const rules = [rule];
@@ -144,13 +147,14 @@ describe("Rule-engine spec", () => {
 
     it("and-rule 0=1 false", () => {
         const facts = [xIs(1)];
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
             some: [],
             all: [xCondition("eq", 0)],
-            actions: [excludeById(["abx" as PageId, "dfg" as PageId])],
+            onFailure: [],
+            onSuccess: [excludeById(["abx" as PageId, "dfg" as PageId])],
         };
         expect(engine.solve(rule, facts)).toEqual(false);
         const results = engine.solveAll([rule], facts);
@@ -160,12 +164,13 @@ describe("Rule-engine spec", () => {
 
     it("One true some-rule gives true", () => {
         const facts = [xIs(6)];
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
             description: "",
             some: [xCondition("eq", 6)],
             all: [],
-            actions: [excludeById(["abcf" as PageId])],
+            onFailure: [],
+            onSuccess: [excludeById(["abcf" as PageId])],
         };
         expect(engine.solve(rule, facts)).toBe(true);
         const result = engine.solveAll([rule], facts);
@@ -174,33 +179,35 @@ describe("Rule-engine spec", () => {
 
     it("One false some-rule gives false", () => {
         const facts = [xIs(6)];
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
             some: [xCondition("eq", 5)],
             all: [],
-            actions: [],
+            onFailure: [],
+            onSuccess: [],
         };
         expect(engine.solve(rule, facts)).toBe(false);
     });
 
     it("All true all-rules, and one true some-rule -> true", () => {
         const facts = [xIs(9)];
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
             some: [xCondition("eq", 5), xCondition("greater-then", 3)],
             all: [xCondition("greater-then", 5), xCondition("eq", 9)],
-            actions: [],
+            onFailure: [],
+            onSuccess: [],
         };
         expect(engine.solve(rule, facts)).toBe(true);
     });
 
     it("Can solve complex rule [some-2 -> true]", () => {
         const facts = [xIs(9)];
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
@@ -213,7 +220,8 @@ describe("Rule-engine spec", () => {
                 },
             ],
             all: [],
-            actions: [excludeByTag("asdf")],
+            onFailure: [],
+            onSuccess: [excludeByTag("asdf")],
         };
         expect(engine.solve(rule, facts)).toBe(true);
         const result = engine.solveAll([rule], facts);
@@ -221,7 +229,7 @@ describe("Rule-engine spec", () => {
     });
     it("Can solve complex rule [some-1 -> false]", () => {
         const facts = [xIs(0)];
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
@@ -234,7 +242,8 @@ describe("Rule-engine spec", () => {
                 },
             ],
             all: [],
-            actions: [excludeByTag("xbj")],
+            onFailure: [],
+            onSuccess: [excludeByTag("xbj")],
         };
         expect(engine.solve(rule, facts)).toBe(false);
         const result = engine.solveAll([rule], facts);
@@ -244,7 +253,7 @@ describe("Rule-engine spec", () => {
 
     it("Can solve complex rule [some-1-true -> true]", () => {
         const facts = [xIs(0)];
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
@@ -257,13 +266,14 @@ describe("Rule-engine spec", () => {
                 },
             ],
             all: [],
-            actions: [],
+            onFailure: [],
+            onSuccess: [],
         };
         expect(engine.solve(rule, facts)).toBe(true);
     });
 
     it("Empty some (nested) returns false (not valid condition)", () => {
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
@@ -276,19 +286,21 @@ describe("Rule-engine spec", () => {
                 },
             ],
             all: [],
-            actions: [],
+            onFailure: [],
+            onSuccess: [],
         };
         expect(engine.solve(rule, [])).toBe(false);
     });
 
     it("Empty complex -> false", () => {
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
             some: [],
             all: [],
-            actions: [],
+            onFailure: [],
+            onSuccess: [],
         };
         expect(engine.solve(rule, [])).toBe(false);
     });
@@ -296,13 +308,14 @@ describe("Rule-engine spec", () => {
     it("Complex all 6 true conditions -> true", () => {
         const facts = [xIs(0)];
         const action = excludeById(["as1" as PageId]);
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
             some: [...falseIf_0_simple, ...trueIf_0_simple],
             all: [...trueIf_0_conditions, ...trueIf_0_simple],
-            actions: [action],
+            onFailure: [],
+            onSuccess: [action],
         };
         // CAN SOLVE
         expect(engine.solve(rule, facts)).toBe(true);
@@ -315,26 +328,28 @@ describe("Rule-engine spec", () => {
 
     it("True some, but false all -> true", () => {
         const facts = [xIs(0)];
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
             some: [...falseIf_0_simple, ...trueIf_0_simple],
             all: [...trueIf_0_conditions, ...trueIf_0_simple, ...falseIf_0_simple],
-            actions: [],
+            onFailure: [],
+            onSuccess: [],
         };
         expect(engine.solve(rule, facts)).toBe(false);
     });
 
     it("Empty some && true all -> true", () => {
         const facts = [xIs(0)];
-        const rule: Rule = {
+        const rule: Rule<any, any> = {
             id: "id123",
 
             description: "",
             some: [],
             all: [...trueIf_0_conditions, ...trueIf_0_simple],
-            actions: [],
+            onFailure: [],
+            onSuccess: [],
         };
         expect(engine.solve(rule, facts)).toBe(true);
     });

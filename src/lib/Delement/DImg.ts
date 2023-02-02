@@ -1,7 +1,7 @@
 import { DElement } from "./DElement";
 import { DImgDto } from "../DElement.dto";
-import { DCommandBus } from "../events-and-actions/DCommandBus";
-import { EventBus } from "../events-and-actions/event-bus";
+import { DCommandBus } from "../commands/DCommandBus";
+import { EventBus } from "../events/event-bus";
 import { ScaleService } from "../engine/scale";
 import { DTimestamp } from "../common/DTimestamp";
 

@@ -2,10 +2,10 @@ import { PageDto } from "../SchemaDto";
 import { VideoContainer } from "../Delement/VideoContainer";
 import { AudioContainer } from "../Delement/AudioContainer";
 import { DAutoPlaySequence } from "../Delement/DAuto-play";
-import { DCommandBus } from "../events-and-actions/DCommandBus";
-import { DCommand } from "../events-and-actions/DCommand";
+import { DCommandBus } from "../commands/DCommandBus";
+import { DCommand } from "../commands/DCommand";
 import { DTimestamp } from "../common/DTimestamp";
-import { EventBus } from "../events-and-actions/event-bus";
+import { EventBus } from "../events/event-bus";
 import { ScaleService } from "../engine/scale";
 import { ResourceProvider } from "./resource-provider";
 

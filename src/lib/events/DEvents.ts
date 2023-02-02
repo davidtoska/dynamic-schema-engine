@@ -5,8 +5,17 @@ import { AnsweredQuestion } from "../player/history-que";
 import PageId = ID.PageId;
 
 type EventProducer =
-    // | "DHtml"
-    "DVideo" | "DUser" | "DAudio" | "DImage" | "MediaManager" | "DPage" | "Window" | "HOST" | "RuleEngine" | "Engine";
+    | "DVideo"
+    | "DUser"
+    | "DAudio"
+    | "DImage"
+    | "MediaManager"
+    | "DPage"
+    | "Window"
+    | "HOST"
+    | "RuleEngine"
+    | "Engine"
+    | "STATE-SERVICE";
 
 interface Ev<K extends EventKind, P extends EventProducer, T> {
     readonly kind: K;
@@ -17,6 +26,12 @@ interface Ev<K extends EventKind, P extends EventProducer, T> {
 }
 
 type EventKind = `${Uppercase<string>}_EVENT`;
+
+export type DStateEvent = Ev<
+    "STATE_QUERY_RESULT_CHANGED_EVENT",
+    "STATE-SERVICE",
+    { queryName: string; value: boolean }
+>;
 
 export type DAudioEvent =
     | Ev<"AUDIO_PLAY_EVENT", "DAudio", {}>
@@ -67,6 +82,7 @@ export type DEvent =
     | DPageEvents
     | MediaManagerEvent
     | DWindowEvents
+    | DStateEvent
     | Ev<"USER_CLICKED_EVENT", "DUser", { elementId: ElementId }>
     | Ev<"RULE_MATCH_EVENT", "Window", { ruleId: string }>
     | Ev<

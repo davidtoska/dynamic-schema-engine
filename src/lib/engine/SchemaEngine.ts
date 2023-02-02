@@ -1,23 +1,26 @@
 import { SchemaDto } from "../SchemaDto";
 import { DMediaManager } from "../services/DMedia-manager";
-import { DCommandBus } from "../events-and-actions/DCommandBus";
-import { EventBus } from "../events-and-actions/event-bus";
+import { DCommandBus } from "../commands/DCommandBus";
+import { EventBus } from "../events/event-bus";
 import { DPlayer } from "../player/dplayer";
 import { AnsweredQuestion } from "../player/history-que";
 import { DTimestamp } from "../common/DTimestamp";
 import { DPage } from "./DPage";
 import { ScaleService } from "./scale";
 import { ResourceProvider } from "../services/resource-provider";
+import { StateService } from "../state/state-service";
+import { DEFAULT_STATE_DERIVED_LIST, DEFAULT_STATE_PROPS_LIST } from "../state/default-props";
 
 export class SchemaEngine {
     private readonly commandBus = new DCommandBus();
-    private readonly eventBus: EventBus;
+    private readonly eventBus = new EventBus();
     private readonly mediaManager: DMediaManager;
     private readonly scale: ScaleService;
     private readonly hostElement: HTMLDivElement;
     private readonly uiContainer: HTMLDivElement = document.createElement("div");
     private readonly mediaContainer: HTMLDivElement = document.createElement("div");
     private readonly resourceProvider: ResourceProvider;
+    private readonly stateService: StateService;
     private player: DPlayer;
     private readonly subs: Array<() => void> = [];
 
@@ -30,7 +33,11 @@ export class SchemaEngine {
         this.hostElement = hostEl;
         this.hostElement.appendChild(this.uiContainer);
         this.hostElement.appendChild(this.mediaContainer);
-        this.eventBus = new EventBus();
+        this.stateService = new StateService(
+            this.eventBus,
+            DEFAULT_STATE_PROPS_LIST.map((p) => p.propDefinition),
+            DEFAULT_STATE_DERIVED_LIST
+        );
         this.scale = new ScaleService({
             baseHeight: schema.baseHeight,
             baseWidth: schema.baseWidth,

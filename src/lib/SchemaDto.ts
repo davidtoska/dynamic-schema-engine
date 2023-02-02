@@ -3,7 +3,9 @@ import { DAudioDto, DElementDto, DImgDto, DVideoDto } from "./DElement.dto";
 import { Rule } from "./rules/rule";
 import { ID } from "./ID";
 import { Fact } from "./rules/fact";
+import { PageQueCommand } from "./commands/DCommand";
 
+export type PageQueRules = Rule<PageQueCommand, never>;
 export interface PageDto {
     readonly id: ID.PageId;
     readonly elements: Array<DElementDto>;
@@ -17,7 +19,7 @@ export interface PageDto {
 
 export interface PageSequenceDto {
     readonly id: string;
-    readonly rules: Array<Rule>;
+    readonly rules: Array<PageQueRules>;
     readonly pages: Array<PageDto>;
 }
 
@@ -28,7 +30,7 @@ export interface SchemaDto {
     readonly baseWidth: number;
     readonly backgroundColor: string;
     readonly pages: PageDto[];
-    readonly rules: Array<Rule>;
+    readonly rules: Array<PageQueRules>;
     readonly pageSequences?: Array<PageSequenceDto>;
     readonly predefinedFacts?: ReadonlyArray<Fact>;
 }

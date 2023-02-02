@@ -1,42 +1,31 @@
 import { Condition } from "./condition";
 import { Fact } from "./fact";
 import { DUtil } from "../utils/DUtil";
-import { PageQueCommand } from "../events-and-actions/DCommand";
 
-export interface Rule {
+export interface Rule<OnSuccessAction, OnFailureAction> {
     readonly id: string;
     readonly description: string;
     readonly all: ReadonlyArray<Condition>;
     readonly some: ReadonlyArray<Condition>;
-    readonly actions: ReadonlyArray<PageQueCommand>;
+    readonly onSuccess: ReadonlyArray<OnSuccessAction>;
+    readonly onFailure: ReadonlyArray<OnFailureAction>;
 }
 
 export namespace Rule {
-    export const createEmpty = (id: string): Rule => {
-        const newRule: Rule = {
-            actions: [],
-            all: [],
-            description: "Describe this rule ",
-            id,
-            // label: 'Add a label',
-            some: [],
-        };
-        return newRule;
-    };
-
     /**
      * Validates that the rule is valid.
      * @param rule
      */
 
-    export const isEmpty = (rule: Rule): boolean => {
+    export const isEmpty = (rule: Rule<any, any>): boolean => {
         const emptyConditions = rule.all.length === 0 && rule.some.length === 0;
-        const emptyActions = rule.actions.length === 0;
+        const emptyActions = rule.onSuccess.length === 0 && rule.onFailure.length === 0;
         return emptyConditions || emptyActions;
     };
 
-    export const solve = (rule: Rule, facts: ReadonlyArray<Fact>): boolean => {
+    export const solve = (rule: Rule<any, any>, facts: ReadonlyArray<Fact>): boolean => {
         if (rule.some.length === 0 && rule.all.length === 0) {
+            // TODO RETURN WARNING? OR LOGGING ?
             return false;
         }
 

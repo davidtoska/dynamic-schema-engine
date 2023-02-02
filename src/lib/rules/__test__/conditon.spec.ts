@@ -73,6 +73,21 @@ const validStringCondition: Condition.String = {
     operator: "not-eq",
 };
 
+describe("Can pick all simple conditions from Complex.", () => {
+    const complex: Condition.Complex = {
+        kind: "complex-condition",
+        name: "test-condition",
+        all: [validStringCondition, validNumericCondition],
+        some: [inValidFactId, validNumericCondition, inValidFactId],
+    };
+    it("empty condition will always be false", () => {
+        expect(Condition.getAllSimpleConditions(complex).length).toBe(5);
+        expect(Condition.getAllSimpleConditions([complex, complex, validNumericCondition, inValidFactId]).length).toBe(
+            12
+        );
+    });
+});
+
 describe("condition validation", () => {
     it("empty condition will always be false", () => {
         expect(Condition.evaluate(complex([], []), [f.xeq1])).toBe(false);

@@ -58,13 +58,14 @@ const complex = (all: ReadonlyArray<Condition.Simple>, some: ReadonlyArray<Condi
     some,
 });
 
-const createRule = (all: ReadonlyArray<Condition>, some: ReadonlyArray<Condition>): Rule => {
-    const rule: Rule = {
+const createRule = (all: ReadonlyArray<Condition>, some: ReadonlyArray<Condition>): Rule<any, any> => {
+    const rule: Rule<any, any> = {
         id: "xyz",
         description: "",
         some,
         all,
-        actions: [],
+        onSuccess: [],
+        onFailure: [],
     };
     return rule;
 };

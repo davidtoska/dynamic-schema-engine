@@ -62,11 +62,6 @@ export namespace Condition {
         return result;
     };
 
-    /**
-     *
-     * @param item
-     * @param facts
-     */
     const evaluateComplex = (condition: Condition.Complex, facts: ReadonlyArray<Fact>): boolean => {
         if (condition.some.length === 0 && condition.all.length === 0) {
             return false;
@@ -159,5 +154,38 @@ export namespace Condition {
                 const check: never = op;
         }
         return result;
+    };
+
+    const _getAllSimple = (condition: Condition): ReadonlyArray<Condition.Simple> => {
+        const simple: Array<Condition.Simple> = [];
+        switch (condition.kind) {
+            case "complex-condition":
+                simple.push(...condition.all);
+                simple.push(...condition.some);
+                break;
+            case "numeric-condition":
+                simple.push(condition);
+                break;
+            case "string-condition":
+                simple.push(condition);
+                break;
+            default:
+                DUtil.neverCheck(condition);
+        }
+        return simple;
+    };
+
+    export const getAllSimpleConditions = (
+        condition: Condition | Array<Condition>
+    ): ReadonlyArray<Condition.Simple> => {
+        const simple: Array<Condition.Simple> = [];
+        if (Array.isArray(condition)) {
+            condition.forEach((c) => {
+                simple.push(..._getAllSimple(c));
+            });
+        } else {
+            simple.push(..._getAllSimple(condition));
+        }
+        return simple;
     };
 }
