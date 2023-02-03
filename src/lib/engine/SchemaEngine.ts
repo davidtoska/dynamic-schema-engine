@@ -9,7 +9,6 @@ import { DPage } from "./DPage";
 import { ScaleService } from "./scale";
 import { ResourceProvider } from "../services/resource-provider";
 import { StateService } from "../state/state-service";
-import { DEFAULT_STATE_DERIVED_LIST, DEFAULT_STATE_PROPS_LIST } from "../state/default-props";
 
 export class SchemaEngine {
     private readonly commandBus = new DCommandBus();
@@ -33,10 +32,14 @@ export class SchemaEngine {
         this.hostElement = hostEl;
         this.hostElement.appendChild(this.uiContainer);
         this.hostElement.appendChild(this.mediaContainer);
+        const stateProps = this.schema.stateVariables ?? [];
+        const stateQueries = this.schema.stateQueries ?? [];
         this.stateService = new StateService(
             this.eventBus,
-            DEFAULT_STATE_PROPS_LIST.map((p) => p.propDefinition),
-            DEFAULT_STATE_DERIVED_LIST
+            stateProps,
+            stateQueries
+            // DEFAULT_STATE_PROPS_LIST.map((p) => p.propDefinition),
+            // DEFAULT_STATE_DERIVED_LIST
         );
         this.scale = new ScaleService({
             baseHeight: schema.baseHeight,
@@ -81,6 +84,9 @@ export class SchemaEngine {
             // }
             if (command.kind === "PAGE_QUE_NEXT_PAGE_COMMAND") {
                 this.nextPage();
+            }
+            if (command.kind === "STATE_MUTATE_COMMAND") {
+                this.stateService.mutation(command.payload.mutation);
             }
 
             if (command.kind === "ENGINE_LEAVE_PAGE_COMMAND") {

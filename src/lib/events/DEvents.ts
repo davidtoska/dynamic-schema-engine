@@ -27,14 +27,16 @@ interface Ev<K extends EventKind, P extends EventProducer, T> {
 
 type EventKind = `${Uppercase<string>}_EVENT`;
 
-export type DStateEvent = Ev<
+export type QueryChangedEvent = Ev<
     "STATE_QUERY_RESULT_CHANGED_EVENT",
     "STATE-SERVICE",
     { queryName: string; value: boolean }
 >;
 
+export type AudioPlayEvent = Ev<"AUDIO_PLAY_EVENT", "DAudio", {}>;
+
 export type DAudioEvent =
-    | Ev<"AUDIO_PLAY_EVENT", "DAudio", {}>
+    | AudioPlayEvent
     | Ev<"AUDIO_PAUSED_EVENT", "DAudio", {}>
     | Ev<"AUDIO_ENDED_EVENT", "DAudio", {}>
     | Ev<"AUDIO_ERROR_EVENT", "DAudio", { error: unknown }>
@@ -82,7 +84,7 @@ export type DEvent =
     | DPageEvents
     | MediaManagerEvent
     | DWindowEvents
-    | DStateEvent
+    | QueryChangedEvent
     | Ev<"USER_CLICKED_EVENT", "DUser", { elementId: ElementId }>
     | Ev<"RULE_MATCH_EVENT", "Window", { ruleId: string }>
     | Ev<

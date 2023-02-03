@@ -58,23 +58,23 @@ export namespace DState {
         );
     };
 
+    export const isStringMutation = (mutation: StateMutation): mutation is SetStringMutation => {
+        return mutation && mutation.kind === "set-string";
+    };
+
     export interface StateQuery {
         readonly name: string;
         readonly condition: Condition;
     }
-
     export interface QueryResult {
         readonly queryName: string;
         readonly result: boolean;
     }
+
     export type MutationResult<T extends string | number> = {
         readonly propName: string;
         readonly previousValue: T;
         readonly currentValue: T;
-    };
-
-    export const isStringMutation = (mutation: StateMutation): mutation is SetStringMutation => {
-        return mutation && mutation.kind === "set-string";
     };
 
     export const numericPropToFact = (prop: NumericProp, value: number) => {

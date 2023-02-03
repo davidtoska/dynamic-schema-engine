@@ -4,6 +4,7 @@ import { Rule } from "./rules/rule";
 import { ID } from "./ID";
 import { Fact } from "./rules/fact";
 import { PageQueCommand } from "./commands/DCommand";
+import { DState } from "./state/Dstate";
 
 export type PageQueRules = Rule<PageQueCommand, never>;
 export interface PageDto {
@@ -31,6 +32,8 @@ export interface SchemaDto {
     readonly backgroundColor: string;
     readonly pages: PageDto[];
     readonly rules: Array<PageQueRules>;
+    readonly stateVariables?: ReadonlyArray<DState.Prop>;
+    readonly stateQueries?: ReadonlyArray<DState.StateQuery>;
     readonly pageSequences?: Array<PageSequenceDto>;
     readonly predefinedFacts?: ReadonlyArray<Fact>;
 }

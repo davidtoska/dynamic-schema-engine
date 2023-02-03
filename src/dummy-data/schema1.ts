@@ -5,6 +5,8 @@ import { Theme1 } from "./theme1";
 import { DAutoPlaySequence } from "../lib/Delement/DAuto-play";
 import { DB } from "./DB";
 import { IconUrls } from "../lib/icon-urls";
+import { Ok } from "../lib/common/result";
+import { _PROPS, _Queries } from "../lib/state/standard-props";
 
 const imgPages = [
     PageGenerator.imagePage(img["1"]),
@@ -85,5 +87,7 @@ export const schema1: SchemaDto = {
     baseWidth: 1024,
     pages: [page1, page1, page2],
     rules: [],
+    stateVariables: Object.values(_PROPS).map((def) => def.propDefinition),
+    stateQueries: Object.values(_Queries),
     pageSequences: [],
 };

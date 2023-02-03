@@ -3,22 +3,22 @@ import { Condition } from "../rules/condition";
 import { Fact } from "../rules/fact";
 import { Failure, Ok } from "../common/result";
 import { StateService } from "./state-service";
-import { DEFAULT_STATE_PROPS, DERIVED_STATE } from "./default-props";
+import { _P, _Q } from "./state-testing-helpers";
 import { EventBus } from "../events/event-bus";
 
 let eventBus = new EventBus();
 let stateContainer = new StateService(eventBus, [], []);
-const {
-    inputBlockedByAudio,
-    inputBlockedByVideo,
-    inputBlockingBySequence,
-    mediaBlockedByVideo,
-    mediaBlockedBySequence,
-    mediaBlockedByAudio,
-} = DEFAULT_STATE_PROPS;
-
-const allVariables = Object.values(DEFAULT_STATE_PROPS).map((p) => p.propDefinition);
-const allDerived = Object.values(DERIVED_STATE);
+// const {
+//     inputBlockedByAudio,
+//     inputBlockedByVideo,
+//     inputBlockingBySequence,
+//     mediaBlockedByVideo,
+//     mediaBlockedBySequence,
+//     mediaBlockedByAudio,
+// } = DEFAULT_STATE_PROPS;
+//
+const allVariables = Object.values(_P).map((p) => p.propDefinition);
+const allDerived = Object.values(_Q);
 describe("State-container", () => {
     beforeEach(() => {
         eventBus = new EventBus();
@@ -26,63 +26,33 @@ describe("State-container", () => {
     });
 
     it("can add variables, and update", () => {
-        stateContainer = new StateService(eventBus, [inputBlockedByAudio.propDefinition]);
-        const setBlocked: DState.StateMutation = {
-            kind: "set-number",
-            propName: inputBlockedByAudio.propDefinition.propName,
-            value: 0,
-        };
-        stateContainer.mutation(setBlocked);
-        const result = stateContainer.getPropAsFact(inputBlockedByAudio.propDefinition.propName);
+        stateContainer = new StateService(eventBus, [_P.propA.propDefinition]);
+        const setFalse = _P.propA.setFalseMutation;
+        stateContainer.mutation(setFalse);
+        const result = stateContainer.getPropAsFact(_P.propA.propName);
         expect(result.isOk()).toBe(true);
 
         // expect(result.errors.length).toBe(1);
     });
 
     it("can not update non-excisting variable", () => {
-        stateContainer = new StateService(eventBus, [inputBlockingBySequence.propDefinition]);
+        const p = _P.propB;
+        stateContainer = new StateService(eventBus, [p.propDefinition]);
         const invalidName = "invalid-variable-name";
         stateContainer.mutation({ kind: "set-number", propName: invalidName, value: 2 });
         const result0 = stateContainer.getPropAsFact(invalidName);
         expect(result0.isOk()).toBe(false);
     });
-    it("can solve condition: ", () => {
-        stateContainer = new StateService(eventBus, [inputBlockingBySequence.propDefinition]);
-        const condition: Condition = {
-            kind: "numeric-condition",
-            referenceId: inputBlockingBySequence.propDefinition.propName,
-            referenceLabel: "",
-            valueLabel: "",
-            value: 0,
-            operator: "eq",
-        };
-
-        const conditionNot: Condition = {
-            kind: "numeric-condition",
-            referenceId: inputBlockingBySequence.propDefinition.propName,
-            referenceLabel: "",
-            valueLabel: "",
-            value: 1,
-            operator: "eq",
-        };
-
-        expect(stateContainer.isMatched(condition)).toBe(true);
-        expect(stateContainer.isMatched(conditionNot)).toBe(false);
+    it("can solve condition, and initial value is false.: ", () => {
+        const p = _P.propD;
+        expect(stateContainer.isMatched(p.isTrue)).toBe(false);
+        expect(stateContainer.isMatched(p.isFalse)).toBe(true);
     });
 
     it("Solve will change after update: ", () => {
-        const condition: Condition = {
-            kind: "numeric-condition",
-            referenceId: inputBlockingBySequence.propDefinition.propName,
-            referenceLabel: "",
-            valueLabel: "",
-            value: 0,
-            operator: "eq",
-        };
-
-        expect(stateContainer.isMatched(condition)).toBe(true);
-        // stateContainer.update(condition.referenceId, { _type: "set", value: 5 });
-        // expect(stateContainer.isMatched(condition)).toBe(false);
+        expect(stateContainer.isMatched(_P.propA.isFalse)).toBe(true);
+        stateContainer.mutation(_P.propA.setTrueMutation);
+        expect(stateContainer.isMatched(_P.propA.isFalse)).toBe(false);
     });
 
     it("Can also add audio-played count facts, and get results. ", () => {
@@ -202,9 +172,9 @@ describe("State-container", () => {
         const s = stateContainer.getState();
 
         expect(s.propCount).toBe(7);
-        expect(s.state[mediaBlockedByAudio.propDefinition.propName]).toBe(0);
+        expect(s.state[_P.propA.propName]).toBe(0);
         expect(s.propArray.find((p) => p.propName === "not-defined")).toBe(undefined);
-        expect(s.propArray.find((p) => p.propName === mediaBlockedByAudio.propDefinition.propName)).toBeDefined();
+        expect(s.propArray.find((p) => p.propName === _P.propB.propName)).toBeDefined();
     });
 
     it("Check that condition can be matched:", () => {
@@ -233,77 +203,47 @@ describe("State-container", () => {
         const complex = (all: Condition.Simple[], some: Condition.Simple[]): Condition.Complex => {
             return { kind: "complex-condition", name: "", all, some };
         };
-        expect(stateContainer.canBeMatched(simpleFn(mediaBlockedByAudio.propDefinition.propName))).toBe(true);
+        const a = _P.propA;
+        const b = _P.propB;
+        const c = _P.propC;
+
+        expect(stateContainer.canBeMatched(simpleFn(a.propName))).toBe(true);
         expect(stateContainer.canBeMatched(simpleFn("invalid"))).toBe(false);
         expect(
-            stateContainer.canBeMatched(
-                complex(
-                    [
-                        simpleFn(inputBlockedByAudio.propDefinition.propName),
-                        simpleFn(inputBlockingBySequence.propDefinition.propName),
-                    ],
-                    [simpleFn(mediaBlockedByAudio.propDefinition.propName)]
-                )
-            )
+            stateContainer.canBeMatched(complex([simpleFn(a.propName), simpleFn(b.propName)], [simpleFn(c.propName)]))
         ).toBe(true);
     });
 
-    it("Can get derived state", () => {
-        const { disableAudioIcon } = DERIVED_STATE;
-        const { mediaBlockedByAudio, mediaBlockedBySequence } = DEFAULT_STATE_PROPS;
-        stateContainer = new StateService(eventBus, allVariables, [disableAudioIcon]);
+    it("Can mutate state TODO!! Query", () => {
+        const { propA, propB, propC } = _P;
         const s0 = stateContainer.getState();
 
         expect(s0.propNames.length).toBe(7);
         expect(s0.propCount).toBe(7);
         expect(s0.propArray.length).toBe(6);
-        expect(s0.state[disableAudioIcon.name]).toBe(false);
-        stateContainer.mutation(mediaBlockedBySequence.setTrueMutation);
-        stateContainer.mutation(mediaBlockedByAudio.setTrueMutation);
-        const s1 = stateContainer.getState();
-        expect(s1.state[disableAudioIcon.name]).toBe(true);
-        stateContainer.mutation(mediaBlockedByAudio.setFalseMutation);
 
-        stateContainer.mutation(mediaBlockedBySequence.setFalseMutation);
+        expect(s0.state[propA.propName]).toBe(0);
+        stateContainer.mutation(propA.setTrueMutation);
+        stateContainer.mutation(propB.setTrueMutation);
+        const s1 = stateContainer.getState();
+        expect(s1.state[propA.propName]).toBe(1);
+        stateContainer.mutation(propA.setFalseMutation);
+
+        stateContainer.mutation(propB.setFalseMutation);
         const s2 = stateContainer.getState();
-        expect(s2.state[disableAudioIcon.name]).toBe(false);
+        expect(s2.state[propA.propName]).toBe(0);
     });
 
-    it("Will emit mutation-events", (done) => {
-        const { mediaBlockedBySequence } = DEFAULT_STATE_PROPS;
-        const { disableAudioIcon } = DERIVED_STATE;
+    it("Will emit query changed event.", (done) => {
+        const { A_or_B_or_C_Query } = _Q;
         eventBus.subscribe((event) => {
             if (event.kind === "STATE_QUERY_RESULT_CHANGED_EVENT") {
-                if (event.data.queryName === disableAudioIcon.name) {
+                if (event.data.queryName === A_or_B_or_C_Query.name) {
                     expect(event.data.value).toBe(true);
                     done();
                 }
             }
         });
-        const mutationResult = stateContainer.mutation({
-            propName: mediaBlockedBySequence.propName,
-            kind: "set-number",
-            value: 1,
-        });
-    });
-
-    it("Can not set at property with options to a invalid value:", () => {
-        const { mediaBlockedByAudio, mediaBlockedBySequence } = DEFAULT_STATE_PROPS;
-        stateContainer = new StateService(eventBus, allVariables, []);
-
-        const s0 = stateContainer.getState();
-        const mutationResult = stateContainer.mutation({
-            propName: mediaBlockedBySequence.propName,
-            kind: "set-number",
-            value: 5,
-        });
-        const s1 = stateContainer.getState();
-        // TODO VALIDATE
-        // expect(s0.state[mediaBlockedBySequence.propName]).toBe(s1.state[mediaBlockedBySequence.propName]);
-        // stateContainer.mutation(mediaBlockedByAudio.setFalseMutation);
-        //
-        // stateContainer.mutation(mediaBlockedBySequence.setFalseMutation);
-        // const s2 = stateContainer.getState();
-        // expect(s2.state[disableAudioIcon.propName]).toBe(false);
+        const mutationResult = stateContainer.mutation(_P.propA.setTrueMutation);
     });
 });

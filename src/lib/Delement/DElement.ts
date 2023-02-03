@@ -1,6 +1,6 @@
 import { DStyle } from "./DStyle";
 import { DElementBaseDto } from "../DElement.dto";
-import { DCommand } from "../commands/DCommand";
+import { DCommand, ElementCommand } from "../commands/DCommand";
 import { DCommandBus } from "../commands/DCommandBus";
 import { DEventHandler } from "../event-handlers/DEventHandler";
 import { DUtil } from "../utils/DUtil";
@@ -23,6 +23,7 @@ export abstract class DElement<T extends HTMLElement> {
         opacity: 1,
     };
 
+    // private readonly onQueryChangedHandlers =
     private readonly eventHandlers: DEventHandler.LookUp;
     protected readonly commandBud: DCommandBus;
     protected readonly eventBus: EventBus;
@@ -70,6 +71,9 @@ export abstract class DElement<T extends HTMLElement> {
             if (event.kind === "HOST_SCALE_CHANGED_EVENT") {
                 console.log("HANDLE THIS SCALE CHANGE!!");
                 this.updateStyles({});
+            }
+            if (event.kind === "STATE_QUERY_RESULT_CHANGED_EVENT") {
+                this.queryChangedHandler(event.data.queryName, event.data.value);
             }
         });
         this.normalize();
@@ -144,6 +148,27 @@ export abstract class DElement<T extends HTMLElement> {
         }
     }
 
+    private queryChangedHandler(queryName: string, value: boolean) {
+        const maybeHandlers = this.baseDto.stateQueryChange;
+        if (!maybeHandlers) {
+            return;
+        }
+        const queryHandlers = maybeHandlers.filter((h) => h.queryName === queryName);
+        queryHandlers.forEach((h) => {
+            if (value) {
+                h.whenTrue.forEach((command) => {
+                    this.doAction(command);
+                });
+            } else {
+                h.whenFalse.forEach((command) => {
+                    this.doAction(command);
+                });
+            }
+        });
+        // console.log(findByQuery, value);
+        // const all = this.baseDto.stateQueryChange ?? [];
+    }
+
     private onClickHandler(_: MouseEvent) {
         if (!this.clickHandlerIsEnabled) {
             console.log(this.id + "Click disabled");
@@ -160,6 +185,7 @@ export abstract class DElement<T extends HTMLElement> {
             });
             clickAction.forEach((command) => {
                 this.commandBud.emit(command);
+
                 // this.doAction(action);
             });
         }

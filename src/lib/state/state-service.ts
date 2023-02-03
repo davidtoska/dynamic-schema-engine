@@ -4,7 +4,7 @@ import { Condition } from "../rules/condition";
 import { DState } from "./Dstate";
 import { EventBus } from "../events/event-bus";
 import { DTimestamp } from "../common/DTimestamp";
-import { DStateEvent } from "../events/DEvents";
+import { QueryChangedEvent } from "../events/DEvents";
 
 export class StateService {
     private readonly TAG = " [ STATE_SERVICE ] :";
@@ -110,6 +110,7 @@ export class StateService {
     private evaluateQueries(): ReadonlyArray<{ queryName: string; prev: boolean; curr: boolean }> {
         const facts = this.getAllFacts();
         const all: Array<{ queryName: string; prev: boolean; curr: boolean }> = [];
+        console.log(facts);
         this.queries.forEach((q) => {
             const prev = q.lastResult;
 
@@ -118,6 +119,7 @@ export class StateService {
             all.push({ queryName: q.query.name, prev, curr });
             // def.value = value;
         });
+        console.log(all);
         return all;
     }
 
@@ -144,7 +146,7 @@ export class StateService {
     }
 
     private emitQueryChangedEvent(data: { queryName: string; value: boolean }) {
-        const queryChangedEvent: DStateEvent = {
+        const queryChangedEvent: QueryChangedEvent = {
             kind: "STATE_QUERY_RESULT_CHANGED_EVENT",
             producer: "STATE-SERVICE",
             producerId: "STATE-SERVICE",
