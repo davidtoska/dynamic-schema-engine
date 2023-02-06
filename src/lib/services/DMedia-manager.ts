@@ -20,7 +20,7 @@ export class DMediaManager {
 
     constructor(
         private hostEl: HTMLDivElement,
-        private readonly actionService: DCommandBus,
+        private readonly commandBus: DCommandBus,
         private readonly eventBus: EventBus,
         private readonly resourceProvider: ResourceProvider,
         private readonly scale: ScaleService
@@ -29,13 +29,13 @@ export class DMediaManager {
         const audioEl = document.createElement("audio");
         this.hostEl.append(videoEl);
         this.videoContainer = new VideoContainer(videoEl, eventBus, this.scale);
-        this.audioContainer = new AudioContainer(audioEl, this.eventBus);
+        this.audioContainer = new AudioContainer(audioEl, this.eventBus, this.commandBus);
         this.tick = this.tick.bind(this);
         this.videoContainer.setStyle({ visibility: "hidden" });
         const now = DTimestamp.now();
         this.pageEnter = now;
         this.sincePageEnter = DTimestamp.diff(now, now);
-        this.actionService.subscribe((action) => {
+        this.commandBus.subscribe((action) => {
             this.commandHandler(action);
         });
     }
@@ -94,26 +94,11 @@ export class DMediaManager {
             this.videoContainer.pause();
         }
         if (command.kind === "AUDIO_PLAY_COMMAND") {
-            this.eventBus.emit({
-                kind: "MEDIA_BLOCKING_START_EVENT",
-                producer: "MediaManager",
-                producerId: "MediaManager",
-                timestamp: DTimestamp.now(),
-                data: {},
-            });
             this.audioContainer
                 .playToEnd()
                 .then(() => {})
                 .catch()
-                .finally(() => {
-                    this.eventBus.emit({
-                        kind: "MEDIA_BLOCKING_END_EVENT",
-                        producer: "MediaManager",
-                        producerId: "MediaManager",
-                        timestamp: DTimestamp.now(),
-                        data: {},
-                    });
-                });
+                .finally(() => {});
         }
 
         if (command.kind === "AUDIO_PAUSE_COMMAND") {
@@ -122,28 +107,18 @@ export class DMediaManager {
     }
 
     private async playSequence(seq: DAutoPlaySequence) {
+        console.log(this.TAG + "SEQUENCE STARTED -- TODO EVENT FOR THIS??");
         const elements = seq.items;
         if (elements.length === 0) {
             return false;
         }
-
-        // if (elements)
-        // const seq = this.sequence;
-
-        this.eventBus.emit({
-            kind: "MEDIA_BLOCKING_START_EVENT",
-            producer: "MediaManager",
-            producerId: "MediaManager",
-            timestamp: DTimestamp.now(),
-            data: {},
+        seq.startCommands.forEach((c) => {
+            this.commandBus.emit(c);
         });
-        this.eventBus.emit({
-            kind: "INPUT_BLOCKING_MEDIA_END_EVENT",
-            producer: "MediaManager",
-            producerId: "MediaManager",
-            timestamp: DTimestamp.now(),
-            data: {},
-        });
+        // this.commandBus.emit(DStateProps.mediaBlockedBySequence.setTrueCommand);
+        // if (seq.blockUserInput) {
+        //     this.commandBus.emit(DStateProps.inputBlockingBySequence.setTrueCommand);
+        // }
         for (let i = 0; i < elements.length; i++) {
             const item = elements[i];
             if (item.kind === "autoplay-video") {
@@ -160,21 +135,12 @@ export class DMediaManager {
                 await this.audioContainer.playToEnd();
             }
         }
-
-        this.eventBus.emit({
-            kind: "INPUT_BLOCKING_MEDIA_END_EVENT",
-            producer: "MediaManager",
-            producerId: "MediaManager",
-            timestamp: DTimestamp.now(),
-            data: {},
+        seq.endCommands.forEach((c) => {
+            this.commandBus.emit(c);
         });
-        this.eventBus.emit({
-            kind: "MEDIA_BLOCKING_END_EVENT",
-            producer: "MediaManager",
-            producerId: "MediaManager",
-            timestamp: DTimestamp.now(),
-            data: {},
-        });
+        // this.actionService.emit(DStateProps.mediaBlockedBySequence.setFalseCommand);
+        // this.actionService.emit(DStateProps.inputBlockingBySequence.setFalseCommand);
+        console.log(this.TAG + "SEQUENCE ENDED");
         return true;
     }
 

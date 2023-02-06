@@ -9,6 +9,7 @@ import { DPage } from "./DPage";
 import { ScaleService } from "./scale";
 import { ResourceProvider } from "../services/resource-provider";
 import { StateService } from "../state/state-service";
+import { StateCommand } from "../commands/DCommand";
 
 export class SchemaEngine {
     private readonly commandBus = new DCommandBus();
@@ -20,6 +21,7 @@ export class SchemaEngine {
     private readonly mediaContainer: HTMLDivElement = document.createElement("div");
     private readonly resourceProvider: ResourceProvider;
     private readonly stateService: StateService;
+    private readonly globalEventToStateHandlers = new Map<string, ReadonlyArray<StateCommand>>();
     private player: DPlayer;
     private readonly subs: Array<() => void> = [];
 
@@ -32,21 +34,20 @@ export class SchemaEngine {
         this.hostElement = hostEl;
         this.hostElement.appendChild(this.uiContainer);
         this.hostElement.appendChild(this.mediaContainer);
-        const stateProps = this.schema.stateVariables ?? [];
+        const stateProps = this.schema.stateProps ?? [];
         const stateQueries = this.schema.stateQueries ?? [];
-        this.stateService = new StateService(
-            this.eventBus,
-            stateProps,
-            stateQueries
-            // DEFAULT_STATE_PROPS_LIST.map((p) => p.propDefinition),
-            // DEFAULT_STATE_DERIVED_LIST
-        );
+        this.stateService = new StateService(this.eventBus, this.commandBus, stateProps, stateQueries);
         this.scale = new ScaleService({
             baseHeight: schema.baseHeight,
             baseWidth: schema.baseWidth,
             containerWidth: width,
             containerHeight: height,
         });
+        const globalEventHandlers = schema.stateFromEvent ?? [];
+        globalEventHandlers.forEach((h) => {
+            this.globalEventToStateHandlers.set(h.onEvent, h.thenExecute);
+        });
+
         const resources = SchemaDto.getResources(this.schema);
         this.resourceProvider = new ResourceProvider({ videos: resources.videoList, audio: resources.audioList });
         this.mediaManager = new DMediaManager(
@@ -78,15 +79,18 @@ export class SchemaEngine {
     }
 
     private hookUpListeners() {
+        const eventSubscription = this.eventBus.subscribe((ev) => {
+            const globalHandlers = this.globalEventToStateHandlers.get(ev.kind) ?? [];
+            globalHandlers.forEach((stateCommand) => {
+                this.commandBus.emit(stateCommand);
+            });
+        });
         const commandSubscription = this.commandBus.subscribe((command) => {
             // switch (command.kind) {
             //
             // }
             if (command.kind === "PAGE_QUE_NEXT_PAGE_COMMAND") {
                 this.nextPage();
-            }
-            if (command.kind === "STATE_MUTATE_COMMAND") {
-                this.stateService.mutation(command.payload.mutation);
             }
 
             if (command.kind === "ENGINE_LEAVE_PAGE_COMMAND") {
@@ -109,7 +113,9 @@ export class SchemaEngine {
         });
 
         this.subs.push(commandSubscription);
+        this.subs.push(eventSubscription);
     }
+
     private styleSelf() {
         this.hostElement.style.height = this.scale.pageHeight + "px";
         this.hostElement.style.width = this.scale.pageWidth + "px";

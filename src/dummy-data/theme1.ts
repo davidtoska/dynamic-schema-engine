@@ -4,9 +4,10 @@ import { PageDto } from "../lib/SchemaDto";
 import { DB } from "./DB";
 import { ButtonTheme } from "./theme-response-bar";
 import { ThemeUtils } from "./theme-utils";
-import { IconUrls } from "../lib/icon-urls";
 import { ThemeAudioButton } from "./theme-audio-button";
-import { ThemeVideoPlayer } from "./theme-video-player";
+import { CssTheme, ThemeVideoPlayer } from "./theme-video-player";
+import { DStyle } from "../lib/Delement/DStyle";
+import { DStateProps } from "./standard-props";
 
 export namespace Theme1 {
     import VideoDB = DB.VideoDB;
@@ -15,54 +16,65 @@ export namespace Theme1 {
     import QuestionDB = DB.QuestionDB;
     import AudioDB = DB.AudioDB;
 
-    export const responseButtons = (question: DB.QuestionDB, pageId: PageId, db: DB.DB): ReadonlyArray<DDivDto> => {
-        const createBtn = (questionId: DB.QuestionUUID, opt: QOptionDB) => {
-            const theme = ButtonTheme.themes[opt.theme];
-            const btn: DDivDto = {
-                id: ID.elementId(),
-                _tag: "div",
-                children: [
-                    {
-                        _tag: "p",
-                        id: ID.elementId(),
-                        text: opt.label,
-                        style: {
-                            textColor: theme.textColor,
-                            fontSize: theme.fontSize,
-                            w: 84,
-                            x: 8,
-                            fontWeight: theme.fontWeight,
-                            textAlign: "center",
-                            ...ThemeUtils.centerY(),
-                        },
+    const createBtn = (pageId: PageId, questionId: DB.QuestionUUID, opt: QOptionDB) => {
+        const enabledStyles: Partial<DStyle> = { opacity: 1 };
+        const disabledStyles: Partial<DStyle> = { opacity: 0.3 };
+        const theme = ButtonTheme.themes[opt.theme];
+        const btnId = ID.elementId();
+        const btn: DDivDto = {
+            id: btnId,
+            _tag: "div",
+            children: [
+                {
+                    _tag: "p",
+                    id: ID.elementId(),
+                    text: opt.label,
+                    style: {
+                        // ...theme,
+                        textColor: theme.textColor,
+                        fontSize: theme.fontSize,
+                        w: 84,
+                        x: 8,
+                        fontWeight: theme.fontWeight,
+                        textAlign: "center",
+                        ...ThemeUtils.centerY(),
                     },
-                ],
-                onClick: [
-                    {
-                        kind: "ENGINE_LEAVE_PAGE_COMMAND",
-                        target: "ENGINE",
-                        targetId: "ENGINE",
-                        payload: {
-                            pageId,
-                            factsCollected: [
-                                {
-                                    kind: "numeric-fact",
-                                    label: opt.label,
-                                    value: opt.value,
-                                    referenceId: questionId,
-                                    referenceLabel: "",
-                                },
-                            ],
-                        },
+                },
+            ],
+            onClick: [
+                {
+                    kind: "ENGINE_LEAVE_PAGE_COMMAND",
+                    target: "ENGINE",
+                    targetId: "ENGINE",
+                    payload: {
+                        pageId,
+                        factsCollected: [
+                            {
+                                kind: "numeric-fact",
+                                label: opt.label,
+                                value: opt.value,
+                                referenceId: questionId,
+                                referenceLabel: "QuestionId: " + questionId,
+                            },
+                        ],
                     },
-                ],
-                style: { ...theme },
-            };
-            return btn;
+                },
+            ],
+            stateQueryChange: [
+                {
+                    queryName: DStateProps._Queries.disableUserInputQuery.name,
+                    whenFalse: [...ThemeUtils.enableClickCommands(btnId, enabledStyles)],
+                    whenTrue: [...ThemeUtils.disableClickCommands(btnId, disabledStyles)],
+                },
+            ],
+            style: { ...theme, ...enabledStyles },
         };
+        return btn;
+    };
 
+    export const responseButtons = (question: DB.QuestionDB, pageId: PageId, db: DB.DB): ReadonlyArray<DDivDto> => {
         const options = question.options.map((id) => db.getOption(id));
-        const buttonElement = options.map((o) => createBtn(question.id, o));
+        const buttonElement = options.map((o) => createBtn(pageId, question.id, o));
         ThemeUtils.spaceEvenlyX(buttonElement);
         return buttonElement;
     };
@@ -71,7 +83,7 @@ export namespace Theme1 {
         question: QuestionDB;
         db: DB.DB;
         videoConfig?: { autoplay: boolean; video: VideoDB };
-        questionTextAudio?: AudioDB;
+        questionTextAudio?: { autoplay: boolean; audio: AudioDB };
     }
 
     export const createQuestionPage = (input: QuestionPageInput): PageDto => {
@@ -82,39 +94,21 @@ export namespace Theme1 {
         const audioResources: DAudioDto[] = [];
         const videoResources: DVideoDto[] = [];
         let mainVideo: DVideoDto | null = null;
+        let mainTextAudio: DAudioDto | null = null;
 
         if (questionTextAudio) {
-            const mainTextAudio = ThemeAudioButton.createMainTextAudio(questionTextAudio);
-            audioResources.push(mainTextAudio.audioDto);
-            elements.push(...mainTextAudio.elements);
+            const mainTextAudioComponent = ThemeAudioButton.createMainTextAudio(questionTextAudio.audio);
+            mainTextAudio = mainTextAudioComponent.audioDto;
+            audioResources.push(mainTextAudioComponent.audioDto);
+            elements.push(...mainTextAudioComponent.elements);
         }
 
         if (videoConfig) {
             const playerData = ThemeVideoPlayer.createPlayer(videoConfig.video);
             mainVideo = playerData.videoDto;
+            videoResources.push(playerData.videoDto);
             elements.push(...playerData.elements);
         }
-
-        const playIcon: DImgDto = {
-            _tag: "img",
-            id: ID.elementId(),
-            style: { x: 30, y: 30, h: 8, w: 8, opacity: 0.8 },
-            url: IconUrls.playCircleRegular,
-        };
-        const pauseIcon: DImgDto = {
-            _tag: "img",
-            id: ID.elementId(),
-            style: { x: 50, y: 30, h: 8, w: 8, opacity: 0.8 },
-            url: IconUrls.pauseSvg,
-        };
-
-        const replayIcon: DImgDto = {
-            _tag: "img",
-            id: ID.elementId(),
-            style: { x: 70, y: 30, h: 8, w: 8, opacity: 0.8 },
-            url: IconUrls.replayCircleSvg,
-        };
-        elements.push(playIcon, pauseIcon, replayIcon);
 
         const questionText: DTextDto = {
             id: ID.elementId(),
@@ -133,19 +127,34 @@ export namespace Theme1 {
         const pageDto: PageDto = {
             id: pageId,
             elements: [...btns, questionText, ...elements],
-            autoPlaySequence: { blocking: true, id: "1", items: [] },
+            autoPlaySequence: {
+                blockUserInput: true,
+                id: "1",
+                items: [],
+                startCommands: [
+                    DStateProps.mediaBlockedBySequence.setTrueCommand,
+                    DStateProps.inputBlockingBySequence.setTrueCommand,
+                ],
+                endCommands: [
+                    DStateProps.mediaBlockedBySequence.setFalseCommand,
+                    DStateProps.inputBlockingBySequence.setFalseCommand,
+                ],
+            },
             video: videoResources,
             audio: audioResources,
         };
+        if (mainTextAudio && questionTextAudio?.autoplay) {
+            pageDto.autoPlaySequence?.items.push({
+                kind: "autoplay-audio",
+                audioId: mainTextAudio.id,
+            });
+        }
         if (mainVideo) {
-            pageDto.video?.push(mainVideo);
             pageDto.mainVideoId = mainVideo.id;
-            if (videoConfig?.autoplay === true) {
+            if (videoConfig?.autoplay) {
                 pageDto.autoPlaySequence?.items.push({
-                    id: "1",
                     kind: "autoplay-video",
                     videoId: mainVideo.id,
-                    mode: "blocking",
                     muted: false,
                 });
             }

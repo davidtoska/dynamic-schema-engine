@@ -1,13 +1,13 @@
 import { DElementDto } from "../lib/DElement.dto";
 import { DStyle } from "../lib/Delement/DStyle";
 import { ID } from "../lib/ID";
-import { DCommand } from "../lib/commands/DCommand";
+import { DCommand, ElementCommand } from "../lib/commands/DCommand";
 import { DEventHandler } from "../lib/event-handlers/DEventHandler";
 
 export namespace ThemeUtils {
     import ElementId = ID.ElementId;
 
-    export const disableClickCommands = (elementId: ElementId, styleChanges: Partial<DStyle>): DCommand[] => {
+    export const disableClickCommands = (elementId: ElementId, styleChanges: Partial<DStyle>): ElementCommand[] => {
         return [
             { kind: "ELEMENT_DISABLE_CLICK_COMMAND", target: "ELEMENT", targetId: elementId, payload: {} },
             {
@@ -19,7 +19,7 @@ export namespace ThemeUtils {
         ];
     };
 
-    export const enableClickCommands = (elementId: ElementId, styleChanges: Partial<DStyle>): DCommand[] => {
+    export const enableClickCommands = (elementId: ElementId, styleChanges: Partial<DStyle>): ElementCommand[] => {
         return [
             { kind: "ELEMENT_ENABLE_CLICK_COMMAND", target: "ELEMENT", targetId: elementId, payload: {} },
             {
@@ -30,103 +30,7 @@ export namespace ThemeUtils {
             },
         ];
     };
-
-    export const showOnVideoPlay = (elementId: ElementId): Array<DEventHandler> => {
-        const eventHandlers: Array<DEventHandler> = [
-            {
-                onEvent: "VIDEO_PLAY_EVENT",
-                thenExecute: [ThemeUtils.showCommand(elementId)],
-            },
-            {
-                onEvent: "VIDEO_ENDED_EVENT",
-                thenExecute: [ThemeUtils.hideCommand(elementId)],
-            },
-            {
-                onEvent: "VIDEO_PAUSED_EVENT",
-                thenExecute: [ThemeUtils.hideCommand(elementId)],
-            },
-        ];
-        return eventHandlers;
-    };
-
-    export const hideOnVideoPlay = (elementId: ElementId): Array<DEventHandler> => {
-        const eventHandlers: Array<DEventHandler> = [
-            {
-                onEvent: "VIDEO_PLAY_EVENT",
-                thenExecute: [ThemeUtils.hideCommand(elementId)],
-            },
-            {
-                onEvent: "VIDEO_ENDED_EVENT",
-                thenExecute: [ThemeUtils.showCommand(elementId)],
-            },
-            {
-                onEvent: "VIDEO_PAUSED_EVENT",
-                thenExecute: [ThemeUtils.showCommand(elementId)],
-            },
-        ];
-
-        return eventHandlers;
-    };
-
-    export const hideOnMediaPlay = <T extends DElementDto>(element: T): T => {
-        const oldHandlers = element.eventHandlers ?? [];
-        const eventHandlers: Array<DEventHandler> = [
-            {
-                onEvent: "VIDEO_PLAY_EVENT",
-                thenExecute: [ThemeUtils.hideCommand(element.id)],
-            },
-            {
-                onEvent: "VIDEO_ENDED_EVENT",
-                thenExecute: [ThemeUtils.showCommand(element.id)],
-            },
-            {
-                onEvent: "VIDEO_PAUSED_EVENT",
-                thenExecute: [ThemeUtils.showCommand(element.id)],
-            },
-            {
-                onEvent: "AUDIO_PLAY_EVENT",
-                thenExecute: [ThemeUtils.hideCommand(element.id)],
-            },
-
-            {
-                onEvent: "AUDIO_ENDED_EVENT",
-                thenExecute: [ThemeUtils.showCommand(element.id)],
-            },
-        ];
-        const allHandlers: ReadonlyArray<DEventHandler> = [...oldHandlers, ...eventHandlers];
-        return { ...element, eventHandlers: allHandlers };
-    };
-
-    export const showOnMediaPlay = <T extends DElementDto>(element: T): T => {
-        const oldHandlers = element.eventHandlers ?? [];
-        const eventHandlers: Array<DEventHandler> = [
-            {
-                onEvent: "VIDEO_PLAY_EVENT",
-                thenExecute: [ThemeUtils.showCommand(element.id)],
-            },
-            {
-                onEvent: "VIDEO_ENDED_EVENT",
-                thenExecute: [ThemeUtils.hideCommand(element.id)],
-            },
-            {
-                onEvent: "VIDEO_PAUSED_EVENT",
-                thenExecute: [ThemeUtils.hideCommand(element.id)],
-            },
-            {
-                onEvent: "AUDIO_PLAY_EVENT",
-                thenExecute: [ThemeUtils.showCommand(element.id)],
-            },
-
-            {
-                onEvent: "AUDIO_ENDED_EVENT",
-                thenExecute: [ThemeUtils.hideCommand(element.id)],
-            },
-        ];
-        const allHandlers: ReadonlyArray<DEventHandler> = [...oldHandlers, ...eventHandlers];
-        return { ...element, eventHandlers: allHandlers };
-    };
-
-    export const hideCommand = (elementId: ElementId): DCommand => {
+    export const hideCommand = (elementId: ElementId): ElementCommand => {
         const hideCommand: DCommand = {
             kind: "ELEMENT_STYLE_COMMAND",
             target: "ELEMENT",
@@ -135,7 +39,7 @@ export namespace ThemeUtils {
         };
         return hideCommand;
     };
-    export const showCommand = (elementId: ElementId): DCommand => {
+    export const showCommand = (elementId: ElementId): ElementCommand => {
         const showCommand: DCommand = {
             kind: "ELEMENT_STYLE_COMMAND",
             target: "ELEMENT",

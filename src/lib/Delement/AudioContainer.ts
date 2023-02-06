@@ -2,22 +2,26 @@ import { CanPlayToEnd } from "./VideoContainer";
 import { DAudioDto } from "../DElement.dto";
 import { EventBus } from "../events/event-bus";
 import { DTimestamp } from "../common/DTimestamp";
+import { DEvent } from "../events/DEvents";
+import { DEventHandler } from "../event-handlers/DEventHandler";
+import { DCommandBus } from "../commands/DCommandBus";
 
 export class AudioContainer implements CanPlayToEnd {
     private readonly TAG = "[ DAudio]";
     protected dto: DAudioDto | null = null;
     private el: HTMLAudioElement;
+    private subs: Array<() => void> = [];
     constructor(
         element: HTMLAudioElement,
-        // private pageActionService: DCommandBus,
         private eventBus: EventBus,
+        private readonly commandBus: DCommandBus,
         dto?: DAudioDto
     ) {
         this.el = element;
         this.el.style.position = "absolute";
         this.el.style.visibility = "hidden";
         if (dto) {
-            this.dto = dto;
+            this.setAudio(dto);
         }
 
         this.onLoad = this.onLoad.bind(this);
@@ -46,12 +50,37 @@ export class AudioContainer implements CanPlayToEnd {
     }
 
     setAudio(dto: DAudioDto) {
-        // this.el.onprogress
-        // console.log("DID SET AUDIO");
+        this.subs.forEach((unsubscribe) => {
+            unsubscribe();
+        });
+        const sub = this.eventBus.subscribe((ev) => {
+            this.handleEvent(ev);
+        });
+        this.subs.push(sub);
         this.dto = dto;
         this.el.src = dto.url;
         this.el.load();
-        // this.el.ondurationchange
+    }
+    private handleEvent(ev: DEvent) {
+        const handlers = this.dto?.eventHandlers;
+        const id = this.dto?.id;
+        if (!handlers) {
+            return false;
+        }
+        const lookUp = DEventHandler.createLookUp(handlers);
+        const allHandlers = lookUp.get(ev.kind) ?? [];
+        allHandlers.forEach((h) => {
+            const pId = h.when?.producerId;
+            const thisId = this.dto?.id;
+            console.log(pId, thisId);
+            if (pId && thisId && pId === thisId) {
+                const commands = h.thenExecute;
+                commands.forEach((c) => {
+                    this.commandBus.emit(c);
+                });
+            }
+        });
+        return true;
     }
 
     onLoadedMetadata(_: Event) {

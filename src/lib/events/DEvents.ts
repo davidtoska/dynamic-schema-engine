@@ -3,6 +3,7 @@ import { ID } from "../ID";
 import ElementId = ID.ElementId;
 import { AnsweredQuestion } from "../player/history-que";
 import PageId = ID.PageId;
+import { DState } from "../state/Dstate";
 
 type EventProducer =
     | "DVideo"
@@ -27,16 +28,14 @@ interface Ev<K extends EventKind, P extends EventProducer, T> {
 
 type EventKind = `${Uppercase<string>}_EVENT`;
 
-export type QueryChangedEvent = Ev<
-    "STATE_QUERY_RESULT_CHANGED_EVENT",
-    "STATE-SERVICE",
-    { queryName: string; value: boolean }
->;
+export type QueryChangedEvent = Ev<"STATE_QUERY_RESULT_CHANGED_EVENT", "STATE-SERVICE", DState.StateQueryResult>;
 
 export type AudioPlayEvent = Ev<"AUDIO_PLAY_EVENT", "DAudio", {}>;
+// export type AudioWillPlayEvent = Ev<"AUDIO_WILL_PLAY_EVENT", "DAudio", {}>;
 
 export type DAudioEvent =
     | AudioPlayEvent
+    // | AudioWillPlayEvent
     | Ev<"AUDIO_PAUSED_EVENT", "DAudio", {}>
     | Ev<"AUDIO_ENDED_EVENT", "DAudio", {}>
     | Ev<"AUDIO_ERROR_EVENT", "DAudio", { error: unknown }>
@@ -56,11 +55,11 @@ export type DVideoEvent =
     | Ev<"VIDEO_PROGRESS_EVENT", "DVideo", { duration: number; progress: number }>
     | Ev<"VIDEO_ENDED_EVENT", "DVideo", {}>;
 
-export type MediaManagerEvent =
-    | Ev<"MEDIA_BLOCKING_START_EVENT", "MediaManager", {}>
-    | Ev<"MEDIA_BLOCKING_END_EVENT", "MediaManager", {}>
-    | Ev<"INPUT_BLOCKING_MEDIA_START_EVENT", "MediaManager", {}>
-    | Ev<"INPUT_BLOCKING_MEDIA_END_EVENT", "MediaManager", {}>;
+// export type MediaManagerEvent =
+//     | Ev<"MEDIA_BLOCKING_START_EVENT", "MediaManager", {}>
+//     | Ev<"MEDIA_BLOCKING_END_EVENT", "MediaManager", {}>
+//     | Ev<"INPUT_BLOCKING_MEDIA_START_EVENT", "MediaManager", {}>
+//     | Ev<"INPUT_BLOCKING_MEDIA_END_EVENT", "MediaManager", {}>;
 
 export type DImageEvent =
     | Ev<
@@ -82,7 +81,7 @@ export type DEvent =
     | DAudioEvent
     | DVideoEvent
     | DPageEvents
-    | MediaManagerEvent
+    // | MediaManagerEvent
     | DWindowEvents
     | QueryChangedEvent
     | Ev<"USER_CLICKED_EVENT", "DUser", { elementId: ElementId }>

@@ -18,19 +18,4 @@ describe("Event-bus-works", () => {
             producer: "DAudio",
         });
     });
-
-    test("Can query for blocking media.", () => {
-        const bus = new EventBus();
-
-        bus.consoleLogEvents = false;
-
-        bus.emit({
-            kind: "MEDIA_BLOCKING_START_EVENT",
-            timestamp: DTimestamp.now(),
-            data: {},
-            producerId: "",
-            producer: "MediaManager",
-        });
-        expect(bus.query());
-    });
 });

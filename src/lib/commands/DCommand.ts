@@ -10,6 +10,8 @@ type CommandTarget = "VIDEO" | "AUDIO" | "ELEMENT" | "PAGE_QUE" | "ENGINE" | "ST
 type CommandKind = `${Uppercase<CommandTarget>}_${Uppercase<string>}_COMMAND`;
 
 export type StateCommand = CommandDto<"STATE_MUTATE_COMMAND", "STATE", { mutation: DState.StateMutation }>;
+// export type StateCommand = CommandDto<"STATE_MUTATE_COMMAND", "STATE", { mutation: DState.StateMutation }>;
+
 export type NavigationCommand =
     | CommandDto<"PAGE_QUE_NEXT_PAGE_COMMAND", "PAGE_QUE", {}>
     | CommandDto<"PAGE_QUE_GO_TO_SEQUENCE_COMMAND", "PAGE_QUE", { sequenceId: string }>

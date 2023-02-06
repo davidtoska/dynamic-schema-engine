@@ -3,6 +3,7 @@ import { DTimestamp } from "../common/DTimestamp";
 
 export class DCommandBus {
     private readonly TAG = "[ COMMAND_BUS ] ";
+    logCommands = false;
     private readonly commandLog: Array<DCommand & { timestamp: DTimestamp }> = [];
     readonly subscribers = new Set<(event: DCommand) => void>();
     // readonly sub
@@ -17,7 +18,9 @@ export class DCommandBus {
     emit(command: DCommand) {
         const timestamp = DTimestamp.now();
         this.commandLog.push({ ...command, timestamp });
-        this.logCommand(command);
+        if (this.logCommands) {
+            this.logCommand(command);
+        }
         this.subscribers.forEach((cb) => {
             cb(command);
         });

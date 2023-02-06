@@ -3,7 +3,11 @@ import { DEventHandler, QueryChangedHandler } from "./event-handlers/DEventHandl
 import { ID } from "./ID";
 import { DCommand } from "./commands/DCommand";
 
+// export interface CanBlockMedia {
+//     readonly isMediaBlocking:
+// }
 export type DElementDto = DTextDto | DImgDto | DDivDto;
+
 export interface DElementBaseDto {
     readonly id: ID.ElementId;
     readonly style: Partial<DStyle>;
@@ -38,5 +42,7 @@ export interface DAudioDto {
     readonly id: string;
     readonly _tag: "audio";
     readonly url: string;
+    readonly eventHandlers: ReadonlyArray<DEventHandler>;
+
     // readonly isMediaBlocking: boolean;
 }

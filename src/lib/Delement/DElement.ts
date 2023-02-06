@@ -10,6 +10,7 @@ import ElementId = ID.ElementId;
 import { DTimestamp } from "../common/DTimestamp";
 import { AnimationDto } from "../AnimationDto";
 import { ScaleService } from "../engine/scale";
+import { DState } from "../state/Dstate";
 
 export abstract class DElement<T extends HTMLElement> {
     protected readonly el: T;
@@ -73,7 +74,7 @@ export abstract class DElement<T extends HTMLElement> {
                 this.updateStyles({});
             }
             if (event.kind === "STATE_QUERY_RESULT_CHANGED_EVENT") {
-                this.queryChangedHandler(event.data.queryName, event.data.value);
+                this.queryChangedHandler(event.data);
             }
         });
         this.normalize();
@@ -148,14 +149,14 @@ export abstract class DElement<T extends HTMLElement> {
         }
     }
 
-    private queryChangedHandler(queryName: string, value: boolean) {
+    private queryChangedHandler(result: DState.StateQueryResult) {
         const maybeHandlers = this.baseDto.stateQueryChange;
         if (!maybeHandlers) {
             return;
         }
-        const queryHandlers = maybeHandlers.filter((h) => h.queryName === queryName);
+        const queryHandlers = maybeHandlers.filter((h) => h.queryName === result.queryName);
         queryHandlers.forEach((h) => {
-            if (value) {
+            if (result.curr) {
                 h.whenTrue.forEach((command) => {
                     this.doAction(command);
                 });

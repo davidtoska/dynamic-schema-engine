@@ -1,54 +1,15 @@
 import { DState } from "./Dstate";
-import NumericProp = DState.NumericProp;
-import { Condition } from "../rules/condition";
-export class BooleanPropDef<PropName extends string> {
-    readonly propDefinition: NumericProp;
-    readonly setTrueMutation: DState.SetNumberMutation;
-    readonly setFalseMutation: DState.SetNumberMutation;
-    readonly isTrue: Condition.Numeric;
-    readonly isFalse: Condition.Numeric;
-    constructor(public readonly propName: PropName) {
-        this.propDefinition = {
-            propDescription: "DESCRIPTION for: " + propName,
-            propName: propName,
-            initialValue: 0,
-            options: [
-                { value: 0, valueLabel: "FALSE" },
-                { value: 1, valueLabel: "TRUE" },
-            ],
-            _type: "number",
-        };
-        // this.setTrueMutation = {}
-        this.setFalseMutation = { propName, kind: "set-number", value: 0 };
-        this.setTrueMutation = { propName, kind: "set-number", value: 1 };
-        this.isTrue = {
-            kind: "numeric-condition",
-            referenceId: propName,
-            referenceLabel: "",
-            valueLabel: "",
-            value: 1,
-            operator: "eq",
-        };
-        this.isFalse = {
-            kind: "numeric-condition",
-            referenceId: propName,
-            referenceLabel: "",
-            valueLabel: "",
-            value: 0,
-            operator: "eq",
-        };
-    }
-}
+import { BooleanStateProperty } from "./boolean-property";
 
-const propA = new BooleanPropDef("a");
-const propB = new BooleanPropDef("b");
-const propC = new BooleanPropDef("c");
-const propD = new BooleanPropDef("d");
-const propE = new BooleanPropDef("e");
-const propF = new BooleanPropDef("f");
+const propA = new BooleanStateProperty("a", false);
+const propB = new BooleanStateProperty("b", false);
+const propC = new BooleanStateProperty("c", false);
+const propD = new BooleanStateProperty("d", false);
+const propE = new BooleanStateProperty("e", false);
+const propF = new BooleanStateProperty("f", false);
 
 const A_or_B_or_C_Query: DState.StateQuery = {
-    name: "disableAudio",
+    name: "a_or_b_or_c",
     condition: {
         kind: "complex-condition",
         name: "audio-controls-are-blocked",

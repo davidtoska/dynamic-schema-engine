@@ -32,8 +32,9 @@ export interface SchemaDto {
     readonly backgroundColor: string;
     readonly pages: PageDto[];
     readonly rules: Array<PageQueRules>;
-    readonly stateVariables?: ReadonlyArray<DState.Prop>;
+    readonly stateProps?: ReadonlyArray<DState.Prop>;
     readonly stateQueries?: ReadonlyArray<DState.StateQuery>;
+    readonly stateFromEvent: ReadonlyArray<DState.fromEventHandler>;
     readonly pageSequences?: Array<PageSequenceDto>;
     readonly predefinedFacts?: ReadonlyArray<Fact>;
 }

@@ -46,6 +46,7 @@ export namespace DB {
             const newPage: PageDB = {
                 id,
                 question: [],
+                autoplaySequence: [],
             };
 
             return { ...data };
@@ -111,6 +112,7 @@ export namespace DB {
         question: Array<QuestionUUID>;
         mainVideo?: VideoUUID;
         mainImage?: ImageUUID;
+        autoplaySequence: Array<AudioUUID | VideoUUID>;
     }
 
     export interface OptionDB {
@@ -123,7 +125,6 @@ export namespace DB {
     export interface VideoDB {
         readonly id: VideoUUID;
         readonly src: string;
-        readonly isMediaBlocking?: boolean;
     }
 
     export interface AudioDB {

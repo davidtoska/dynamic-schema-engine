@@ -5,6 +5,8 @@ import { DState } from "./Dstate";
 import { EventBus } from "../events/event-bus";
 import { DTimestamp } from "../common/DTimestamp";
 import { QueryChangedEvent } from "../events/DEvents";
+import { DCommandBus } from "../commands/DCommandBus";
+import { DCommand } from "../commands/DCommand";
 
 export class StateService {
     private readonly TAG = " [ STATE_SERVICE ] :";
@@ -15,23 +17,39 @@ export class StateService {
 
     constructor(
         private readonly eventBus: EventBus,
+        private readonly commandBus: DCommandBus,
         private readonly props: ReadonlyArray<DState.Prop>,
-        private readonly derivedProps: ReadonlyArray<DState.StateQuery> = []
+        private readonly queryList: ReadonlyArray<DState.StateQuery> = []
     ) {
         props.forEach((prop) => {
             this.registerProperty(prop);
         });
         const facts = this.getAllFacts();
-        derivedProps.forEach((definition) => {
+        queryList.forEach((definition) => {
             this.registerQuery(definition, facts);
         });
+
         this.evaluateQueries();
+        this.commandBus.subscribe((command) => {
+            this.handleCommands(command);
+        });
+        this.eventBus.subscribe((ev) => {
+            switch (ev.kind) {
+                case "VIDEO_ENDED_EVENT":
+            }
+        });
+    }
+
+    private handleCommands(command: DCommand) {
+        if (command.kind === "STATE_MUTATE_COMMAND") {
+            this.mutation(command.payload.mutation);
+        }
     }
 
     private registerQuery(query: DState.StateQuery, currentFacts: ReadonlyArray<Fact>) {
         const result = Condition.evaluate(query.condition, currentFacts);
         this.queries.set(query.name, { query: query, lastResult: result });
-        this.emitQueryChangedEvent({ queryName: query.name, value: result });
+        this.emitQueryChangedEvent({ queryName: query.name, prev: result, curr: result });
     }
 
     private registerProperty(prop: DState.Prop) {
@@ -107,23 +125,22 @@ export class StateService {
         }
     }
 
-    private evaluateQueries(): ReadonlyArray<{ queryName: string; prev: boolean; curr: boolean }> {
+    private evaluateQueries(): ReadonlyArray<{ queryName: string; prev: boolean; curr: boolean; didChange: boolean }> {
         const facts = this.getAllFacts();
-        const all: Array<{ queryName: string; prev: boolean; curr: boolean }> = [];
-        console.log(facts);
+        const all: Array<{ queryName: string; prev: boolean; curr: boolean; didChange: boolean }> = [];
         this.queries.forEach((q) => {
             const prev = q.lastResult;
 
             const curr = Condition.evaluate(q.query.condition, facts);
+            const didChange = prev !== curr;
             q.lastResult = curr;
-            all.push({ queryName: q.query.name, prev, curr });
+            all.push({ queryName: q.query.name, prev, curr, didChange });
             // def.value = value;
         });
-        console.log(all);
         return all;
     }
 
-    mutation(mutation: DState.StateMutation): { success: boolean } {
+    private mutation(mutation: DState.StateMutation): { success: boolean } {
         const propDef = this.propDefinitions.get(mutation.propName);
         if (!propDef) {
             // TODO LOGGING
@@ -138,14 +155,15 @@ export class StateService {
             this.mutateNumber(propDef, mutation);
         }
         const queryResults = this.evaluateQueries();
-        queryResults.forEach((res) => {
-            this.emitQueryChangedEvent({ queryName: res.queryName, value: res.curr });
+        const changedResult = queryResults.filter((r) => r.didChange);
+        changedResult.forEach((res) => {
+            this.emitQueryChangedEvent({ queryName: res.queryName, prev: res.prev, curr: res.curr });
         });
 
         return { success: true };
     }
 
-    private emitQueryChangedEvent(data: { queryName: string; value: boolean }) {
+    private emitQueryChangedEvent(data: { queryName: string; prev: boolean; curr: boolean }) {
         const queryChangedEvent: QueryChangedEvent = {
             kind: "STATE_QUERY_RESULT_CHANGED_EVENT",
             producer: "STATE-SERVICE",
@@ -230,7 +248,6 @@ export class StateService {
         return hasAll;
     }
     isMatched(condition: Condition) {
-        console.log(name);
         return Condition.evaluate(condition, this.getAllFacts());
     }
 }

@@ -8,6 +8,7 @@
     "test": "jest ",
     "test:one": "jest src/lib/Delement/css.spec.ts",
     "watch-tsc": "tsc --watch --noEmit",
+    "tsc": "tsc ",
     "build": "tsc && vite build",
     "count": "npx cloc src",
     "preview": "vite preview"

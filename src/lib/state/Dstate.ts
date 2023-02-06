@@ -1,5 +1,7 @@
 import { Fact } from "../rules/fact";
 import { Condition } from "../rules/condition";
+import { DEvent } from "../events/DEvents";
+import { StateCommand } from "../commands/DCommand";
 
 export namespace DState {
     interface PropDefinition<TypeName, Type extends string | number> {
@@ -12,6 +14,11 @@ export namespace DState {
 
     export type NumericProp = PropDefinition<"number", number>;
     export type StringProp = PropDefinition<"string", string>;
+
+    export interface fromEventHandler {
+        readonly onEvent: DEvent["kind"];
+        readonly thenExecute: ReadonlyArray<StateCommand>;
+    }
 
     export interface PropValue<T> {
         readonly value: T;
@@ -46,6 +53,7 @@ export namespace DState {
     export type NumberMutations = IncrementNumberMutation | DecrementNumberMutation | SetNumberMutation;
 
     export type StateMutation = SetStringMutation | NumberMutations;
+
     export const isNumberMutation = (mutations: StateMutation): mutations is NumberMutations => {
         if (!mutations) {
             return false;
@@ -66,32 +74,14 @@ export namespace DState {
         readonly name: string;
         readonly condition: Condition;
     }
-    export interface QueryResult {
+
+    export interface StateQueryResult {
         readonly queryName: string;
-        readonly result: boolean;
+        readonly prev: boolean;
+        readonly curr: boolean;
     }
 
-    export type MutationResult<T extends string | number> = {
-        readonly propName: string;
-        readonly previousValue: T;
-        readonly currentValue: T;
-    };
-
     export const numericPropToFact = (prop: NumericProp, value: number) => {
-        // let labeledValue = {
-        //     value,
-        //     label: "" + value,
-        // };
-        // if (hasOptions(prop) && prop.options.length > 0) {
-        //     const optValue = prop.options.find((o) => o.value === value);
-        //     if (optValue) {
-        //         labeledValue.label = optValue.valueLabel;
-        //         labeledValue.value = optValue.value;
-        //     } else {
-        //         console.log("Invalid");
-        //         labeledValue.value = 0;
-        //     }
-        // }
         const fact: Fact.Numeric = {
             kind: "numeric-fact",
             referenceId: prop.propName,

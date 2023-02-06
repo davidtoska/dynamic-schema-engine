@@ -22,6 +22,8 @@ export namespace ButtonTheme {
     export interface ButtonTheme {
         readonly name: "normal" | "level1" | "level2" | "level3" | "level4" | "dont-know";
         readonly styles: ButtonStyles;
+        readonly disabledCss: Partial<DStyle>;
+        readonly enabledCss: Partial<DStyle>;
     }
 
     type ButtonStyles = Pick<
@@ -40,7 +42,6 @@ export namespace ButtonTheme {
         | "borderStyle"
         | "borderRadius"
     >;
-
     export interface ButtonBarTheme {
         readonly name: "normal" | "gradient";
 

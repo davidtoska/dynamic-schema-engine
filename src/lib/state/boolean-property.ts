@@ -7,10 +7,27 @@ export class BooleanStateProperty<PropName extends string> {
     private static readonly TRUE = { value: 1, label: "TRUE" };
     private static readonly FALSE = { value: 0, label: "FALSE" };
     readonly propDefinition: DState.NumericProp;
-    readonly setTrue: DState.SetNumberMutation;
-    readonly setFalse: DState.SetNumberMutation;
-    readonly isTrueCondition: Condition.Numeric;
-    readonly isFalseCondition: Condition.Numeric;
+
+    get isTrueCondition(): Condition.Numeric {
+        return {
+            kind: "numeric-condition",
+            referenceId: this.propName,
+            referenceLabel: this.propName + "[ BOOLEAN ]",
+            valueLabel: BooleanStateProperty.TRUE.label,
+            value: BooleanStateProperty.TRUE.value,
+            operator: "eq",
+        };
+    }
+    get isFalseCondition(): Condition.Numeric {
+        return {
+            kind: "numeric-condition",
+            referenceId: this.propName,
+            referenceLabel: this.propName + "[ BOOLEAN ]",
+            valueLabel: BooleanStateProperty.FALSE.label,
+            value: BooleanStateProperty.FALSE.value,
+            operator: "eq",
+        };
+    }
 
     get setTrueCommand(): StateCommand {
         return {
@@ -18,7 +35,7 @@ export class BooleanStateProperty<PropName extends string> {
             target: "STATE",
             targetId: "STATE",
             payload: {
-                mutation: this.setTrue,
+                mutation: { propName: this.propName, kind: "set-number", value: 1 },
             },
         };
     }
@@ -29,7 +46,7 @@ export class BooleanStateProperty<PropName extends string> {
             target: "STATE",
             targetId: "STATE",
             payload: {
-                mutation: this.setFalse,
+                mutation: { propName: this.propName, kind: "set-number", value: 0 },
             },
         };
     }
@@ -46,27 +63,6 @@ export class BooleanStateProperty<PropName extends string> {
                 { value: BooleanStateProperty.TRUE.value, valueLabel: BooleanStateProperty.TRUE.label },
             ],
             _type: "number",
-        };
-
-        // this.setTrueMutation = {}
-        this.setFalse = { propName, kind: "set-number", value: 0 };
-        this.setTrue = { propName, kind: "set-number", value: 1 };
-        this.isTrueCondition = {
-            kind: "numeric-condition",
-            referenceId: propName,
-            referenceLabel: propName + "[ BOOLEAN ]",
-            valueLabel: BooleanStateProperty.TRUE.label,
-            value: BooleanStateProperty.TRUE.value,
-            operator: "eq",
-        };
-
-        this.isFalseCondition = {
-            kind: "numeric-condition",
-            referenceId: propName,
-            referenceLabel: propName + "[ BOOLEAN ]",
-            valueLabel: BooleanStateProperty.FALSE.label,
-            value: BooleanStateProperty.FALSE.value,
-            operator: "eq",
         };
     }
 }

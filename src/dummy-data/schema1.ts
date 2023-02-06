@@ -1,27 +1,8 @@
 import { SchemaDto } from "../lib/SchemaDto";
-import { PageGenerator } from "./page.generator";
 import { audios, img, videos } from "./media-urls";
 import { Theme1 } from "./theme1";
-import { DAutoPlaySequence } from "../lib/Delement/DAuto-play";
 import { DB } from "./DB";
-import { IconUrls } from "../lib/icon-urls";
-import { Ok } from "../lib/common/result";
-import { _PROPS, _Queries } from "../lib/state/standard-props";
-
-const imgPages = [
-    PageGenerator.imagePage(img["1"]),
-    PageGenerator.imagePage(img["2"]),
-    PageGenerator.imagePage(img["3"]),
-    PageGenerator.imagePage(img["4"]),
-];
-
-const answerPages = [
-    PageGenerator.allElementsPage(),
-    PageGenerator.questionPage(),
-    PageGenerator.questionPage(),
-    PageGenerator.questionPage(),
-    PageGenerator.questionPage(),
-];
+import { DStateProps } from "./standard-props";
 
 const db = DB.createDB();
 
@@ -38,16 +19,10 @@ const audio2 = db.createAudio(audios["2"]);
 const audio3 = db.createAudio(audios["3"]);
 const audio4 = db.createAudio(audios["4"]);
 
-const autoplaySequence: DAutoPlaySequence = {
-    id: "Er det vanskelig for deg å sovne om kvelden?",
-    blocking: true,
-    items: [],
-};
-
-const q0 = db.createQuestion("Intro", [
+const q0 = db.createQuestion("Er det vanskelig for det å sovne om kvelden?", [
     { value: 1, theme: "level1" },
     { value: 2, theme: "level2" },
-    { value: 3, theme: "level3" },
+    { value: 3, theme: "level4" },
     { value: 9, theme: "dont-know" },
 ]);
 
@@ -63,20 +38,34 @@ const q2 = db.createQuestion("Hvor lenge har du egentlig hatt det sånn?", [
     { value: 9, theme: "dont-know" },
 ]);
 
-const page0 = Theme1.createQuestionPage({ question: q0, db, questionTextAudio: audio1 });
+const page0 = Theme1.createQuestionPage({ question: q0, db, questionTextAudio: { audio: audio1, autoplay: false } });
 
 const page1 = Theme1.createQuestionPage({
     question: q1,
     db,
-    questionTextAudio: audio1,
+    questionTextAudio: { audio: audio1, autoplay: false },
     videoConfig: { video: video1, autoplay: false },
 });
 
-const page2 = Theme1.createQuestionPage({
+const autoPlayAudioPage = Theme1.createQuestionPage({
+    question: q2,
+    db,
+    questionTextAudio: { audio: audio1, autoplay: true },
+    videoConfig: { video: video1, autoplay: false },
+});
+
+const autoPlayVideo = Theme1.createQuestionPage({
+    question: q2,
+    db,
+    questionTextAudio: { audio: audio1, autoplay: false },
+    videoConfig: { video: video1, autoplay: true },
+});
+
+const autoplayVideoAndAudio = Theme1.createQuestionPage({
     question: q2,
     db,
     videoConfig: { video: video1, autoplay: true },
-    questionTextAudio: audio1,
+    questionTextAudio: { audio: audio1, autoplay: true },
 });
 
 export const schema1: SchemaDto = {
@@ -85,9 +74,39 @@ export const schema1: SchemaDto = {
     backgroundColor: "white",
     baseHeight: 1300,
     baseWidth: 1024,
-    pages: [page1, page1, page2],
+    pages: [page0, autoPlayAudioPage, autoPlayVideo, autoplayVideoAndAudio],
     rules: [],
-    stateVariables: Object.values(_PROPS).map((def) => def.propDefinition),
-    stateQueries: Object.values(_Queries),
+    stateProps: DStateProps.allDefaultProperties.map((def) => def.propDefinition),
+    stateQueries: DStateProps.allDefaultQueries,
+    stateFromEvent: [
+        {
+            onEvent: "VIDEO_ENDED_EVENT",
+            thenExecute: [
+                DStateProps.userPausedVideo.setFalseCommand,
+                DStateProps.mediaBlockedByVideo.setFalseCommand,
+                DStateProps.videoIsPlaying.setFalseCommand,
+            ],
+        },
+        {
+            onEvent: "VIDEO_PAUSED_EVENT",
+            thenExecute: [DStateProps.videoIsPlaying.setFalseCommand, DStateProps.mediaBlockedByVideo.setFalseCommand],
+        },
+        {
+            onEvent: "VIDEO_PLAY_EVENT",
+            thenExecute: [DStateProps.videoIsPlaying.setTrueCommand, DStateProps.userPausedVideo.setFalseCommand],
+        },
+        {
+            onEvent: "AUDIO_PLAY_EVENT",
+            thenExecute: [DStateProps.audioIsPlaying.setTrueCommand, DStateProps.mediaBlockedByAudio.setTrueCommand],
+        },
+        {
+            onEvent: "AUDIO_ENDED_EVENT",
+            thenExecute: [DStateProps.audioIsPlaying.setFalseCommand, DStateProps.mediaBlockedByAudio.setFalseCommand],
+        },
+        {
+            onEvent: "AUDIO_PAUSED_EVENT",
+            thenExecute: [DStateProps.audioIsPlaying.setFalseCommand, DStateProps.mediaBlockedByAudio.setFalseCommand],
+        },
+    ],
     pageSequences: [],
 };

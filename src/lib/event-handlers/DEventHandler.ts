@@ -1,18 +1,13 @@
-import { DCommand, ElementCommand } from "../commands/DCommand";
-import { AudioPlayEvent, DEvent } from "../events/DEvents";
+import { DCommand, ElementCommand, StateCommand } from "../commands/DCommand";
+import { DEvent } from "../events/DEvents";
 import { Condition } from "../rules/condition";
 
 export interface DEventHandler<E extends DEvent = DEvent> {
     readonly onEvent: E["kind"];
-
     readonly when?: { producerId?: string; condition?: Condition };
     readonly thenExecute: ReadonlyArray<DCommand>;
 }
-export interface AudioPlayEventHandler {
-    readonly onEvent: AudioPlayEvent["kind"];
-    readonly when: { producerId: AudioPlayEvent["producerId"] };
-    readonly thenExecute: ReadonlyArray<DCommand>;
-}
+
 export interface QueryChangedHandler {
     readonly queryName: string;
     readonly whenTrue: ReadonlyArray<ElementCommand>;

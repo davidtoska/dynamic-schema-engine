@@ -1,10 +1,20 @@
 import { DB } from "./DB";
 import { ID } from "../lib/ID";
-import { DElementDto, DImgDto, DVideoDto } from "../lib/DElement.dto";
+import { DAudioDto, DElementDto, DImgDto, DVideoDto } from "../lib/DElement.dto";
 import { ThemeUtils } from "./theme-utils";
 import { IconUrls } from "../lib/icon-urls";
 import { DStyle } from "../lib/Delement/DStyle";
-import { _PROPS } from "../lib/state/standard-props";
+import { DStateProps } from "./standard-props";
+export interface DComponent {
+    ui: Array<DElementDto>;
+    audioList: DAudioDto[];
+}
+
+export interface CssTheme {
+    css: Partial<DStyle>;
+    cssEnabled: Partial<DStyle>;
+    cssDisabled: Partial<DStyle>;
+}
 
 export namespace ThemeVideoPlayer {
     import ImageDB = DB.ImageDB;
@@ -26,7 +36,7 @@ export namespace ThemeVideoPlayer {
         videoElementStyles: Partial<DStyle>;
     }
 
-    const iconX = 8;
+    const iconX = 4;
     const iconY = 48;
     const iconW = 5;
     const iconH = 5;
@@ -71,17 +81,20 @@ export namespace ThemeVideoPlayer {
             style: { ...theme.playIcon.css, ...theme.playIcon.cssEnabled },
             onClick: [
                 { kind: "VIDEO_PLAY_COMMAND", target: "VIDEO", targetId: videoId, payload: {} },
-                _PROPS.mediaBlockedByVideo.setTrueCommand,
+                // TODO Check if this video shall block other media first?
+                DStateProps.mediaBlockedByVideo.setTrueCommand,
+                DStateProps.userPausedVideo.setFalseCommand,
             ],
-            eventHandlers: [
-                ...ThemeUtils.hideOnVideoPlay(playButtonId),
+            stateQueryChange: [
                 {
-                    onEvent: "MEDIA_BLOCKING_END_EVENT",
-                    thenExecute: [...ThemeUtils.enableClickCommands(playButtonId, { ...theme.playIcon.cssEnabled })],
+                    queryName: DStateProps._Queries.disableVideoPlayQuery.name,
+                    whenTrue: [...ThemeUtils.disableClickCommands(playButtonId, theme.playIcon.cssDisabled)],
+                    whenFalse: [...ThemeUtils.enableClickCommands(playButtonId, theme.playIcon.cssEnabled)],
                 },
                 {
-                    onEvent: "MEDIA_BLOCKING_START_EVENT",
-                    thenExecute: [...ThemeUtils.disableClickCommands(playButtonId, { ...theme.playIcon.cssDisabled })],
+                    queryName: DStateProps._Queries.hideVideoPlayQuery.name,
+                    whenTrue: [ThemeUtils.hideCommand(playButtonId)],
+                    whenFalse: [ThemeUtils.showCommand(playButtonId)],
                 },
             ],
         };
@@ -89,20 +102,18 @@ export namespace ThemeVideoPlayer {
         const pauseBtn: DImgDto = {
             id: pauseButtonId,
             _tag: "img",
-            style: { ...theme.pauseIcon.css, visibility: "hidden" },
+            style: { ...theme.pauseIcon.css, visibility: "hidden", ...theme.pauseIcon.cssEnabled },
             url: theme.pauseIcon.src.src,
-            onClick: [{ kind: "VIDEO_PAUSE_COMMAND", target: "VIDEO", targetId: videoId, payload: {} }],
-            eventHandlers: [
-                ...ThemeUtils.showOnVideoPlay(pauseButtonId),
+            onClick: [
+                { kind: "VIDEO_PAUSE_COMMAND", target: "VIDEO", targetId: videoId, payload: {} },
+                DStateProps.mediaBlockedByVideo.setFalseCommand,
+                DStateProps.userPausedVideo.setTrueCommand,
+            ],
+            stateQueryChange: [
                 {
-                    onEvent: "MEDIA_BLOCKING_END_EVENT",
-                    thenExecute: [...ThemeUtils.enableClickCommands(pauseButtonId, { ...theme.pauseIcon.cssEnabled })],
-                },
-                {
-                    onEvent: "MEDIA_BLOCKING_START_EVENT",
-                    thenExecute: [
-                        ...ThemeUtils.disableClickCommands(pauseButtonId, { ...theme.pauseIcon.cssDisabled }),
-                    ],
+                    queryName: DStateProps._Queries.hideVideoPauseQuery.name,
+                    whenTrue: [ThemeUtils.hideCommand(pauseButtonId)],
+                    whenFalse: [ThemeUtils.showCommand(pauseButtonId)],
                 },
             ],
         };

@@ -8,7 +8,7 @@ export class EventBus {
      * @private
      */
     private readonly eventLog: DEvent[] = [];
-    consoleLogEvents = true;
+    consoleLogEvents = false;
     // readonly sub
 
     subscribe(cb: (event: DEvent) => void) {

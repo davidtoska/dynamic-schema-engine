@@ -6,7 +6,9 @@ import { PageHistory } from "./lib/player/history-que";
 const a =
     "https://firebasestorage.googleapis.com/v0/b/ispe-dev.appspot.com/o/organizations%2ForgId-ispe2%2FmoduleId-8DGaHo8KbnbGQtG9cpn2%2Fvideo-files%2FbqavCovPfxvtvbQgvPcpDDHYugFDSZxbNGXrQsznLmoJSqsbJT?alt=media&token=a75c49cb-707c-4742-a897-ce5792a5f7cc";
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
-<!--    <div id="ex1"></div>-->
+    <div id="builder"></div>
+<!--    <div id="ex2"></div>-->
+    
 
 <!--    <video height="300px" controls="true" src="https://firebasestorage.googleapis.com/v0/b/ispe-dev.appspot.com/o/organizations%2ForgId-ispe2%2FmoduleId-8DGaHo8KbnbGQtG9cpn2%2Fvideo-files%2FbqavCovPfxvtvbQgvPcpDDHYugFDSZxbNGXrQsznLmoJSqsbJT?alt=media&token=a75c49cb-707c-4742-a897-ce5792a5f7cc"></video>-->
   <div id="schema-host">
@@ -14,12 +16,15 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 `;
 
 const host = document.getElementById("schema-host") as HTMLDivElement;
-// const exRoot = document.getElementById("ex1") as HTMLDivElement;
-// exRoot.style.height = "400px";
-// exRoot.style.width = "1200px";
+const builderElement = document.getElementById("builder") as HTMLDivElement;
+// builderElement.appendChild()
+// exRoot.style.height = "40px";
+// exRoot.style.width = "40px";
 // exRoot.style.backgroundColor = "red";
-// exRoot.style.position = "relative";
+// exRoot.style.position = "";
 // exRoot.style.display = "block";
+// exRoot.draggable = true;
+
 // const ex1 = document.createElement("div");
 // exRoot.append(ex1);
 // ex1.style.height = "40%";
