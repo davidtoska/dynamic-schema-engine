@@ -4,7 +4,7 @@ import { IconUrls } from "../lib/icon-urls";
 import { DB } from "./DB";
 import { ThemeUtils } from "./theme-utils";
 import { DStateProps } from "./standard-props";
-import { CssTheme } from "./theme-video-player";
+import { CssTheme } from "./css-theme";
 
 export namespace ThemeAudioButton {
     const theme: CssTheme = {

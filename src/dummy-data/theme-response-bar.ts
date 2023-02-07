@@ -1,5 +1,6 @@
 import { DStyle } from "../lib/Delement/DStyle";
 import { DCss } from "../lib/Delement/css";
+import { CssTheme } from "./css-theme";
 
 export namespace ButtonTheme {
     const GREEN = "#70AD47";
@@ -18,7 +19,18 @@ export namespace ButtonTheme {
     const FONT_WEIGHT: DStyle["fontWeight"] = 600;
     const FONT_SIZE: DCss.Px["value"] = 35;
 
+    type t = CssTheme;
     export type ButtonThemeKind = ButtonTheme["name"];
+    type ButtonThemeNames = "normal" | "level1" | "level2" | "level3" | "level4" | "dontKnow";
+    // const themes: Record<ButtonThemeNames, CssTheme<ButtonStyles>> = {
+    //     "dontKnow": {css: {}, cssEnabled: {}, cssDisabled: {}},
+    //     level1: undefined,
+    //     level2: undefined,
+    //     level3: undefined,
+    //     level4: undefined,
+    //     normal: undefined,
+    // };
+
     export interface ButtonTheme {
         readonly name: "normal" | "level1" | "level2" | "level3" | "level4" | "dont-know";
         readonly styles: ButtonStyles;

@@ -11,7 +11,7 @@ export interface PageDto {
     readonly id: ID.PageId;
     readonly elements: Array<DElementDto>;
     readonly tags?: string[];
-    mainVideoId?: string;
+    readonly mainVideoId?: string;
     readonly backgroundColor?: string;
     readonly video?: Array<DVideoDto>;
     readonly audio?: Array<DAudioDto>;

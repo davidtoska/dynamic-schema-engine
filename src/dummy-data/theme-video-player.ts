@@ -1,20 +1,11 @@
 import { DB } from "./DB";
 import { ID } from "../lib/ID";
-import { DAudioDto, DElementDto, DImgDto, DVideoDto } from "../lib/DElement.dto";
+import { DElementDto, DImgDto, DVideoDto } from "../lib/DElement.dto";
 import { ThemeUtils } from "./theme-utils";
 import { IconUrls } from "../lib/icon-urls";
 import { DStyle } from "../lib/Delement/DStyle";
 import { DStateProps } from "./standard-props";
-export interface DComponent {
-    ui: Array<DElementDto>;
-    audioList: DAudioDto[];
-}
-
-export interface CssTheme {
-    css: Partial<DStyle>;
-    cssEnabled: Partial<DStyle>;
-    cssDisabled: Partial<DStyle>;
-}
+import { CssTheme } from "./css-theme";
 
 export namespace ThemeVideoPlayer {
     import ImageDB = DB.ImageDB;
@@ -23,12 +14,10 @@ export namespace ThemeVideoPlayer {
     const playIconDB = videoDB.createImage(IconUrls.playCircleRegular);
     const videoPauseIcon = videoDB.createImage(IconUrls.pauseSvg);
 
-    interface IconButtonTemplate {
+    interface IconButtonTemplate extends CssTheme {
         src: ImageDB;
-        css: Partial<DStyle>;
-        cssEnabled: Partial<DStyle>;
-        cssDisabled: Partial<DStyle>;
     }
+
     interface VideoPlayerTheme {
         playIcon: IconButtonTemplate;
         pauseIcon: IconButtonTemplate;
@@ -36,25 +25,20 @@ export namespace ThemeVideoPlayer {
         videoElementStyles: Partial<DStyle>;
     }
 
-    const iconX = 4;
-    const iconY = 48;
-    const iconW = 5;
-    const iconH = 5;
-    const disabledOpacity = 0.3;
-    const enabledOpacity = 0.8;
-    const cssDisabled: Partial<DStyle> = { opacity: disabledOpacity, cursor: "not-allowed" };
-    const cssEnabled: Partial<DStyle> = { opacity: enabledOpacity, cursor: "pointer" };
+    const css = { w: 5, h: 5, y: 48, x: 4 };
+    const cssDisabled: Partial<DStyle> = { opacity: 0.3, cursor: "not-allowed" };
+    const cssEnabled: Partial<DStyle> = { opacity: 0.8, cursor: "pointer" };
     const theme: VideoPlayerTheme = {
         overlayPlayIcon: false,
         pauseIcon: {
             src: videoPauseIcon,
-            css: { w: iconW, h: iconH, y: iconY, x: iconX },
+            css,
             cssDisabled,
             cssEnabled,
         },
         playIcon: {
             src: playIconDB,
-            css: { w: iconW, h: iconH, y: iconY, x: iconX },
+            css,
             cssDisabled,
             cssEnabled,
         },

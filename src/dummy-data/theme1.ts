@@ -5,7 +5,7 @@ import { DB } from "./DB";
 import { ButtonTheme } from "./theme-response-bar";
 import { ThemeUtils } from "./theme-utils";
 import { ThemeAudioButton } from "./theme-audio-button";
-import { CssTheme, ThemeVideoPlayer } from "./theme-video-player";
+import { ThemeVideoPlayer } from "./theme-video-player";
 import { DStyle } from "../lib/Delement/DStyle";
 import { DStateProps } from "./standard-props";
 
@@ -84,6 +84,8 @@ export namespace Theme1 {
         db: DB.DB;
         videoConfig?: { autoplay: boolean; video: VideoDB };
         questionTextAudio?: { autoplay: boolean; audio: AudioDB };
+        // autoPlaySequence: Array<>
+        // buttonTheme: ButtonTheme.ButtonThemeKind;
     }
 
     export const createQuestionPage = (input: QuestionPageInput): PageDto => {

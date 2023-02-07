@@ -1,5 +1,8 @@
 import { DCommand } from "../commands/DCommand";
 
+/**
+ * Autoplay video by Id.
+ */
 export interface AutoPlayVideo {
     readonly kind: "autoplay-video";
     readonly muted?: boolean;
@@ -7,6 +10,10 @@ export interface AutoPlayVideo {
     readonly videoId: string;
 }
 
+/**
+ * Add a pause between auto-play elements.
+ * TODO Not implemented
+ */
 export interface AutoPlayPause {
     readonly kind: "autoplay-pause";
     readonly duration: number;
