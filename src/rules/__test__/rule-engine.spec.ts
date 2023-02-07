@@ -3,9 +3,8 @@ import { Rule } from "../rule";
 import { Fact } from "../fact";
 import { Condition } from "../condition";
 import { PageQueCommand } from "../../commands/DCommand";
-import {ID} from "../../Delement/ID";
 
-const excludeById = (ids: ID.PageId[]): PageQueCommand => {
+const excludeById = (ids: string[]): PageQueCommand => {
     return {
         kind: "PAGE_QUE_EXCLUDE_BY_PAGE_ID_COMMAND",
         target: "PAGE_QUE",
@@ -107,7 +106,7 @@ describe("Rule-engine spec", () => {
     });
 
     it("Empty facts => no actions, no errors.", () => {
-        const hideAs1 = excludeById(["as1" as ID.PageId]);
+        const hideAs1 = excludeById(["as1"]);
         const rule: Rule<any, any> = {
             id: "id123",
             description: "",
@@ -133,7 +132,7 @@ describe("Rule-engine spec", () => {
             some: [],
             all: [...trueIf_0_conditions],
             onFailure: [],
-            onSuccess: [excludeById(["as3" as ID.PageId, "as6" as ID.PageId])],
+            onSuccess: [excludeById(["as3", "as6"])],
         };
         const f1 = xIs(0);
         const rules = [rule];
@@ -153,7 +152,7 @@ describe("Rule-engine spec", () => {
             some: [],
             all: [xCondition("eq", 0)],
             onFailure: [],
-            onSuccess: [excludeById(["abx" as ID.PageId, "dfg" as ID.PageId])],
+            onSuccess: [excludeById(["abx", "dfg"])],
         };
         expect(engine.solve(rule, facts)).toEqual(false);
         const results = engine.solveAll([rule], facts);
@@ -169,7 +168,7 @@ describe("Rule-engine spec", () => {
             some: [xCondition("eq", 6)],
             all: [],
             onFailure: [],
-            onSuccess: [excludeById(["abcf" as ID.PageId])],
+            onSuccess: [excludeById(["abcf"])],
         };
         expect(engine.solve(rule, facts)).toBe(true);
         const result = engine.solveAll([rule], facts);
@@ -306,7 +305,7 @@ describe("Rule-engine spec", () => {
 
     it("Complex all 6 true conditions -> true", () => {
         const facts = [xIs(0)];
-        const action = excludeById(["as1" as ID.PageId]);
+        const action = excludeById(["as1"]);
         const rule: Rule<any, any> = {
             id: "id123",
 

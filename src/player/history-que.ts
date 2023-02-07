@@ -1,6 +1,5 @@
 import { Fact } from "../rules/fact";
 import { DTimestamp } from "../common/DTimestamp";
-import { ID } from "../Delement/ID";
 
 export interface AnsweredQuestion {
     readonly timestamp: DTimestamp;
@@ -14,7 +13,7 @@ export namespace AnsweredQuestion {
 }
 
 export interface PageHistory {
-    readonly pageId: ID.PageId;
+    readonly pageId: string;
     readonly answeredQuestions: AnsweredQuestion[];
 }
 

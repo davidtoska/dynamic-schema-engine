@@ -1,6 +1,5 @@
 import { DStyle } from "../Delement/DStyle";
 import { DEventHandler, QueryChangedHandler } from "../event-handlers/DEventHandler";
-import { ID } from "../Delement/ID";
 import { DCommand } from "../commands/DCommand";
 
 // export interface CanBlockMedia {
@@ -13,7 +12,7 @@ interface DStateListener {
 }
 
 export interface DElementBaseDto extends DStateListener {
-    readonly id: ID.ElementId;
+    readonly id: string;
     readonly style: Partial<DStyle>;
     readonly eventHandlers?: ReadonlyArray<DEventHandler>;
     readonly onClick?: ReadonlyArray<DCommand>;

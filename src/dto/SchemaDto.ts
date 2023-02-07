@@ -1,14 +1,13 @@
 import { DAutoPlaySequence } from "../Delement/DAuto-play";
 import { DAudioDto, DElementDto, DImgDto, DVideoDto } from "./DElement.dto";
 import { Rule } from "../rules/rule";
-import { ID } from "../Delement/ID";
 import { Fact } from "../rules/fact";
 import { PageQueCommand } from "../commands/DCommand";
 import { DState } from "../state/Dstate";
 
 export type PageQueRules = Rule<PageQueCommand, never>;
 export interface PageDto {
-    readonly id: ID.PageId;
+    readonly id: string;
     readonly elements: Array<DElementDto>;
     readonly tags?: string[];
     readonly mainVideoId?: string;

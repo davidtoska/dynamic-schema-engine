@@ -5,8 +5,6 @@ import { DCommandBus } from "../commands/DCommandBus";
 import { DEventHandler } from "../event-handlers/DEventHandler";
 import { DUtil } from "../utils/DUtil";
 import { EventBus } from "../events/event-bus";
-import { ID } from "./ID";
-import ElementId = ID.ElementId;
 import { DTimestamp } from "../common/DTimestamp";
 import { AnimationDto } from "../dto/AnimationDto";
 import { ScaleService } from "../engine/scale";
@@ -15,7 +13,7 @@ import { DState } from "../state/Dstate";
 export abstract class DElement<T extends HTMLElement> {
     protected readonly el: T;
     private clickHandlerIsEnabled = true;
-    readonly id: ElementId;
+    readonly id: string;
     private isAnimatingSelf = false;
     protected currStyle: Partial<DStyle> = {
         fontSize: { _unit: "px", value: 100 },

@@ -1,5 +1,4 @@
 import { DTimestamp } from "../common/DTimestamp";
-import { ID } from "../Delement/ID";
 import { AnsweredQuestion } from "../player/history-que";
 import { DState } from "../state/Dstate";
 
@@ -67,8 +66,8 @@ export type DImageEvent =
       >
     | Ev<"IMAGE_ERROR_EVENT", "DImage", { error: unknown }>;
 export type DPageEvents =
-    | Ev<"PAGE_ENTER_EVENT", "DPage", { pageId: ID.PageId }>
-    | Ev<"PAGE_COMPLETED_EVENT", "DPage", { pageId: ID.PageId; answers: AnsweredQuestion[] }>;
+    | Ev<"PAGE_ENTER_EVENT", "DPage", { pageId: string }>
+    | Ev<"PAGE_COMPLETED_EVENT", "DPage", { pageId: string; answers: AnsweredQuestion[] }>;
 
 export type DWindowEvents =
     | Ev<"WINDOW_VISIBILITY_CHANGE_EVENT", "Window", {}>
@@ -82,7 +81,7 @@ export type DEvent =
     // | MediaManagerEvent
     | DWindowEvents
     | QueryChangedEvent
-    | Ev<"USER_CLICKED_EVENT", "DUser", { elementId: ID.ElementId }>
+    | Ev<"USER_CLICKED_EVENT", "DUser", { elementId: string }>
     | Ev<"RULE_MATCH_EVENT", "Window", { ruleId: string }>
     | Ev<
           "ENGINE_SCHEMA_LOADED_EVENT",
