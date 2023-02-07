@@ -13,3 +13,4 @@ export * from "./state/boolean-property";
 export * from "./state/Dstate";
 export * from "./Delement/DStyle";
 export * from "./Delement/DAuto-play";
+export * from "./Delement/css";
