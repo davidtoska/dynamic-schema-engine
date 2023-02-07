@@ -1,5 +1,5 @@
 import { CanPlayToEnd } from "./VideoContainer";
-import { DAudioDto } from "../DElement.dto";
+import { DAudioDto } from "../dto/DElement.dto";
 import { EventBus } from "../events/event-bus";
 import { DTimestamp } from "../common/DTimestamp";
 import { DEvent } from "../events/DEvents";

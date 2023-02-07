@@ -1,5 +1,5 @@
 import { DElement } from "../Delement/DElement";
-import { PageDto } from "../SchemaDto";
+import { PageDto } from "../dto/SchemaDto";
 import { createDElement } from "./element-factory";
 import { EventBus } from "../events/event-bus";
 import { DCommandBus } from "../commands/DCommandBus";

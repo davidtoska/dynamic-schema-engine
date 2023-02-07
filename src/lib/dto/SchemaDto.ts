@@ -1,10 +1,10 @@
-import { DAutoPlaySequence } from "./Delement/DAuto-play";
+import { DAutoPlaySequence } from "../Delement/DAuto-play";
 import { DAudioDto, DElementDto, DImgDto, DVideoDto } from "./DElement.dto";
-import { Rule } from "./rules/rule";
-import { ID } from "./ID";
-import { Fact } from "./rules/fact";
-import { PageQueCommand } from "./commands/DCommand";
-import { DState } from "./state/Dstate";
+import { Rule } from "../rules/rule";
+import { ID } from "../Delement/ID";
+import { Fact } from "../rules/fact";
+import { PageQueCommand } from "../commands/DCommand";
+import { DState } from "../state/Dstate";
 
 export type PageQueRules = Rule<PageQueCommand, never>;
 export interface PageDto {

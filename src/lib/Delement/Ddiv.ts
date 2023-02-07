@@ -1,5 +1,5 @@
 import { DElement } from "./DElement";
-import { DDivDto } from "../DElement.dto";
+import { DDivDto } from "../dto/DElement.dto";
 import { DText } from "./DText";
 import { DImg } from "./DImg";
 import { DCommandBus } from "../commands/DCommandBus";

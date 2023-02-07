@@ -1,9 +1,9 @@
 import { DPlayer, DPlayerData } from "./dplayer";
-import { PageDto, PageSequenceDto } from "../SchemaDto";
+import { PageDto, PageSequenceDto } from "../dto/SchemaDto";
 import { Rule } from "../rules/rule";
 import { PageHistory } from "./history-que";
 import { DTimestamp } from "../common/DTimestamp";
-import { ID } from "../ID";
+import { ID } from "../Delement/ID";
 import PageId = ID.PageId;
 import { PageQueCommand } from "../commands/DCommand";
 

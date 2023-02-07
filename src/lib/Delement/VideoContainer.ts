@@ -1,4 +1,4 @@
-import { DVideoDto } from "../DElement.dto";
+import { DVideoDto } from "../dto/DElement.dto";
 import { DTimestamp } from "../common/DTimestamp";
 import { EventBus } from "../events/event-bus";
 import { ScaleService } from "../engine/scale";

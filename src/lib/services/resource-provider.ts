@@ -1,4 +1,4 @@
-import { DAudioDto, DImgDto, DVideoDto } from "../DElement.dto";
+import { DAudioDto, DImgDto, DVideoDto } from "../dto/DElement.dto";
 
 export class ResourceProvider {
     private readonly TAG = "[ RESOURCE_PROVIDER ]: ";

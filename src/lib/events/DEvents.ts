@@ -1,5 +1,5 @@
 import { DTimestamp } from "../common/DTimestamp";
-import { ID } from "../ID";
+import { ID } from "../Delement/ID";
 import ElementId = ID.ElementId;
 import { AnsweredQuestion } from "../player/history-que";
 import PageId = ID.PageId;

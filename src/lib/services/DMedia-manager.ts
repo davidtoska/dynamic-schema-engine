@@ -1,4 +1,4 @@
-import { PageDto } from "../SchemaDto";
+import { PageDto } from "../dto/SchemaDto";
 import { VideoContainer } from "../Delement/VideoContainer";
 import { AudioContainer } from "../Delement/AudioContainer";
 import { DAutoPlaySequence } from "../Delement/DAuto-play";

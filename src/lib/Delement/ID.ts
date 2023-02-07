@@ -1,4 +1,4 @@
-import { DUtil } from "./utils/DUtil";
+import { DUtil } from "../utils/DUtil";
 
 export namespace ID {
     export type PageId = string & { __pageId: true };

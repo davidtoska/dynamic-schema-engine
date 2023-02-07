@@ -1,4 +1,4 @@
-import { SchemaDto } from "../SchemaDto";
+import { SchemaDto } from "../dto/SchemaDto";
 import { DMediaManager } from "../services/DMedia-manager";
 import { DCommandBus } from "../commands/DCommandBus";
 import { EventBus } from "../events/event-bus";

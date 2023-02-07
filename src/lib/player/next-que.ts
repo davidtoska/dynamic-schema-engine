@@ -1,4 +1,4 @@
-import { PageDto } from "../SchemaDto";
+import { PageDto } from "../dto/SchemaDto";
 
 export class NextQue {
     private originalOrder: ReadonlyArray<string> = [];

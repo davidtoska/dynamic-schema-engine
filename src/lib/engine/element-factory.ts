@@ -2,7 +2,7 @@ import { DElement } from "../Delement/DElement";
 import { DDiv } from "../Delement/Ddiv";
 import { DImg } from "../Delement/DImg";
 import { DText } from "../Delement/DText";
-import { DDivDto, DElementDto } from "../DElement.dto";
+import { DDivDto, DElementDto } from "../dto/DElement.dto";
 import { DCommandBus } from "../commands/DCommandBus";
 import { EventBus } from "../events/event-bus";
 import { ScaleService } from "./scale";

@@ -1,14 +1,14 @@
 import { DStyle } from "./DStyle";
-import { DElementBaseDto } from "../DElement.dto";
+import { DElementBaseDto } from "../dto/DElement.dto";
 import { DCommand, ElementCommand } from "../commands/DCommand";
 import { DCommandBus } from "../commands/DCommandBus";
 import { DEventHandler } from "../event-handlers/DEventHandler";
 import { DUtil } from "../utils/DUtil";
 import { EventBus } from "../events/event-bus";
-import { ID } from "../ID";
+import { ID } from "./ID";
 import ElementId = ID.ElementId;
 import { DTimestamp } from "../common/DTimestamp";
-import { AnimationDto } from "../AnimationDto";
+import { AnimationDto } from "../dto/AnimationDto";
 import { ScaleService } from "../engine/scale";
 import { DState } from "../state/Dstate";
 

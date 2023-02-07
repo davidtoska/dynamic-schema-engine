@@ -1,5 +1,5 @@
 import { DElement } from "./DElement";
-import { DImgDto } from "../DElement.dto";
+import { DImgDto } from "../dto/DElement.dto";
 import { DCommandBus } from "../commands/DCommandBus";
 import { EventBus } from "../events/event-bus";
 import { ScaleService } from "../engine/scale";

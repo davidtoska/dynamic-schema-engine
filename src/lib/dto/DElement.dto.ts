@@ -1,7 +1,7 @@
-import { DStyle } from "./Delement/DStyle";
-import { DEventHandler, QueryChangedHandler } from "./event-handlers/DEventHandler";
-import { ID } from "./ID";
-import { DCommand } from "./commands/DCommand";
+import { DStyle } from "../Delement/DStyle";
+import { DEventHandler, QueryChangedHandler } from "../event-handlers/DEventHandler";
+import { ID } from "../Delement/ID";
+import { DCommand } from "../commands/DCommand";
 
 // export interface CanBlockMedia {
 //     readonly isMediaBlocking:

@@ -3,7 +3,7 @@ import { Rule } from "../rule";
 import { Fact } from "../fact";
 import { Condition } from "../condition";
 import { PageQueCommand } from "../../commands/DCommand";
-import { ID } from "../../ID";
+import { ID } from "../../Delement/ID";
 import PageId = ID.PageId;
 
 const excludeById = (ids: PageId[]): PageQueCommand => {

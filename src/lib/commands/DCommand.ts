@@ -1,6 +1,6 @@
 import { DStyle } from "../Delement/DStyle";
-import { ID } from "../ID";
-import { AnimationDto } from "../AnimationDto";
+import { ID } from "../Delement/ID";
+import { AnimationDto } from "../dto/AnimationDto";
 import PageId = ID.PageId;
 import ElementId = ID.ElementId;
 import { Fact } from "../rules/fact";
