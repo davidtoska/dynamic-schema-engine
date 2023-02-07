@@ -150,7 +150,7 @@ export abstract class DElement<T extends HTMLElement> {
     }
 
     private queryChangedHandler(result: DState.StateQueryResult) {
-        const maybeHandlers = this.baseDto.stateQueryChange;
+        const maybeHandlers = this.baseDto.onStateChange;
         if (!maybeHandlers) {
             return;
         }

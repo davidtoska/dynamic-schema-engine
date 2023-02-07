@@ -8,12 +8,15 @@ import { DCommand } from "../commands/DCommand";
 // }
 export type DElementDto = DTextDto | DImgDto | DDivDto;
 
-export interface DElementBaseDto {
+interface DStateListener {
+    readonly onStateChange?: ReadonlyArray<QueryChangedHandler>;
+}
+
+export interface DElementBaseDto extends DStateListener {
     readonly id: ID.ElementId;
     readonly style: Partial<DStyle>;
     readonly eventHandlers?: ReadonlyArray<DEventHandler>;
     readonly onClick?: ReadonlyArray<DCommand>;
-    readonly stateQueryChange?: ReadonlyArray<QueryChangedHandler>;
 }
 
 export interface DTextDto extends DElementBaseDto {

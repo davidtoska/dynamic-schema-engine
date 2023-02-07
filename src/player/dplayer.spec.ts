@@ -3,12 +3,11 @@ import { PageDto, PageSequenceDto } from "../dto/SchemaDto";
 import { Rule } from "../rules/rule";
 import { PageHistory } from "./history-que";
 import { DTimestamp } from "../common/DTimestamp";
-import { ID } from "../Delement/ID";
-import PageId = ID.PageId;
 import { PageQueCommand } from "../commands/DCommand";
+import {ID} from "../Delement/ID";
 
 const page = (id: number): PageDto => {
-    return { id: ("" + id) as PageId, elements: [] };
+    return { id: ("" + id) as ID.PageId, elements: [] };
 };
 const p1 = page(1);
 const p2 = page(2);

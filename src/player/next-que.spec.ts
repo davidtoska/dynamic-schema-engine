@@ -1,7 +1,6 @@
 import { NextQue } from "./next-que";
 import { PageDto } from "../dto/SchemaDto";
 import { ID } from "../Delement/ID";
-import PageId = ID.PageId;
 
 const tag1 = "tag1";
 const tag2 = "tag2";
@@ -9,12 +8,12 @@ const tag3 = "tag3";
 
 let que = new NextQue();
 const createPage = () => {};
-const p1: PageDto = { id: "1" as PageId, elements: [], tags: [tag1] };
-const p2: PageDto = { id: "2" as PageId, elements: [], tags: [] };
-const p3: PageDto = { id: "3" as PageId, elements: [], tags: [tag2] };
-const p4: PageDto = { id: "4" as PageId, elements: [], tags: [] };
-const p5: PageDto = { id: "5" as PageId, elements: [], tags: [tag3, tag2] };
-const p6: PageDto = { id: "6" as PageId, elements: [], tags: [tag3] };
+const p1: PageDto = { id: "1" as ID.PageId, elements: [], tags: [tag1] };
+const p2: PageDto = { id: "2" as ID.PageId, elements: [], tags: [] };
+const p3: PageDto = { id: "3" as ID.PageId, elements: [], tags: [tag2] };
+const p4: PageDto = { id: "4" as ID.PageId, elements: [], tags: [] };
+const p5: PageDto = { id: "5" as ID.PageId, elements: [], tags: [tag3, tag2] };
+const p6: PageDto = { id: "6" as ID.PageId, elements: [], tags: [tag3] };
 const all = [p1, p2, p3, p4, p5, p6];
 
 beforeEach(() => {

@@ -17,5 +17,5 @@
     "skipLibCheck": true,
     "outDir": "dist"
   },
-  "include": ["src/lib"],
+  "include": ["src"],
 }
